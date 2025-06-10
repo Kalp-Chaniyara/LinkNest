@@ -13,16 +13,16 @@
     --popover: 255 255 255;
     --popover-foreground: 15 23 42;
 
-    --primary: 123 109 255;
+    --primary: 139 92 246;
     --primary-foreground: 255 255 255;
 
-    --secondary: 226 232 240;
+    --secondary: 241 245 249;
     --secondary-foreground: 30 41 59;
 
-    --muted: 241 245 249;
-    --muted-foreground: 100 116 139;
+    --muted: 248 250 252;
+    --muted-foreground: 71 85 105;
 
-    --accent: 226 232 240;
+    --accent: 241 245 249;
     --accent-foreground: 30 41 59;
 
     --destructive: 239 68 68;
@@ -30,39 +30,39 @@
 
     --border: 226 232 240;
     --input: 226 232 240;
-    --ring: 123 109 255;
+    --ring: 139 92 246;
 
     --radius: 0.75rem;
   }
 
   .dark {
-    --background: 2 6 23;
+    --background: 15 23 42;
     --foreground: 248 250 252;
 
-    --card: 3 7 18;
+    --card: 30 41 59;
     --card-foreground: 248 250 252;
 
-    --popover: 3 7 18;
+    --popover: 30 41 59;
     --popover-foreground: 248 250 252;
 
-    --primary: 123 109 255;
+    --primary: 139 92 246;
     --primary-foreground: 255 255 255;
 
-    --secondary: 30 41 59;
+    --secondary: 51 65 85;
     --secondary-foreground: 248 250 252;
 
-    --muted: 15 23 42;
+    --muted: 51 65 85;
     --muted-foreground: 148 163 184;
 
-    --accent: 30 41 59;
+    --accent: 51 65 85;
     --accent-foreground: 248 250 252;
 
     --destructive: 220 38 38;
     --destructive-foreground: 248 250 252;
 
-    --border: 30 41 59;
-    --input: 30 41 59;
-    --ring: 123 109 255;
+    --border: 51 65 85;
+    --input: 51 65 85;
+    --ring: 139 92 246;
   }
 }
 
@@ -73,19 +73,25 @@
 
   body {
     @apply bg-background text-foreground font-sans;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background: linear-gradient(
+      135deg,
+      #6366f1 0%,
+      #8b5cf6 30%,
+      #d946ef 70%,
+      #f97316 100%
+    );
     min-height: 100vh;
   }
 
   .glass {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
 
   .glass-dark {
-    background: rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 }
