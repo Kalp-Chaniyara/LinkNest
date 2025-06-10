@@ -18,7 +18,7 @@ const GroupCard = ({ group, links, onDeleteLink, onDeleteGroup }) => {
             />
             <Folder className="h-5 w-5 text-linkify-600" />
             {group.name}
-            <span className="text-sm text-muted-foreground font-normal">
+            <span className="text-sm text-slate-600 font-normal">
               ({groupLinks.length} links)
             </span>
           </CardTitle>
@@ -36,7 +36,7 @@ const GroupCard = ({ group, links, onDeleteLink, onDeleteGroup }) => {
 
       <CardContent>
         {groupLinks.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
+          <div className="text-center py-8 text-slate-500">
             <Folder className="h-12 w-12 mx-auto mb-3 opacity-50" />
             <p className="text-sm">No links in this group yet</p>
           </div>
