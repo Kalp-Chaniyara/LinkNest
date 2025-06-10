@@ -14,6 +14,8 @@ import {
   EyeOff,
   Clock,
   AlertTriangle,
+  Grid3X3,
+  List,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -23,6 +25,7 @@ const LinkManager = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
+  const [viewMode, setViewMode] = useState("grid"); // "grid" or "list"
 
   // Mock data for demonstration
   useEffect(() => {
@@ -143,12 +146,12 @@ const LinkManager = () => {
   const totalReminders = links.filter((link) => link.reminderDate).length;
 
   return (
-    <div className="min-h-screen bg-gradient-linkify p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-4 animate-fade-in">
-          <h1 className="text-4xl md:text-6xl font-bold text-white drop-shadow-lg">
-            Linkify
+          <h1 className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg">
+            Your Link Dashboard
           </h1>
           <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
             Organize, manage, and access all your important links in one
@@ -315,8 +318,8 @@ const LinkManager = () => {
         )}
 
         {/* Controls */}
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between animate-fade-in">
-          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+        <div className="flex flex-col lg:flex-row gap-4 items-center justify-between animate-fade-in">
+          <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -344,24 +347,48 @@ const LinkManager = () => {
             </div>
           </div>
 
-          <Button
-            onClick={() => setShowAddForm(!showAddForm)}
-            variant="gradient"
-            size="lg"
-            className="w-full md:w-auto"
-          >
-            {showAddForm ? (
-              <>
-                <EyeOff className="h-4 w-4 mr-2" />
-                Hide Form
-              </>
-            ) : (
-              <>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Link
-              </>
-            )}
-          </Button>
+          <div className="flex gap-3 w-full lg:w-auto">
+            {/* View Mode Toggle */}
+            <div className="flex bg-white/90 rounded-lg p-1 border border-white/40">
+              <Button
+                variant={viewMode === "grid" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("grid")}
+                className={`flex-1 ${viewMode === "grid" ? "bg-linkify-500 text-white" : "text-slate-600 hover:bg-white/50"}`}
+              >
+                <Grid3X3 className="h-4 w-4 mr-1" />
+                Grid
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+                className={`flex-1 ${viewMode === "list" ? "bg-linkify-500 text-white" : "text-slate-600 hover:bg-white/50"}`}
+              >
+                <List className="h-4 w-4 mr-1" />
+                List
+              </Button>
+            </div>
+
+            <Button
+              onClick={() => setShowAddForm(!showAddForm)}
+              variant="gradient"
+              size="lg"
+              className="flex-1 lg:flex-initial"
+            >
+              {showAddForm ? (
+                <>
+                  <EyeOff className="h-4 w-4 mr-2" />
+                  Hide Form
+                </>
+              ) : (
+                <>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Link
+                </>
+              )}
+            </Button>
+          </div>
         </div>
 
         {/* Add Link Form */}
@@ -382,6 +409,7 @@ const LinkManager = () => {
             links={filteredLinks}
             onDeleteLink={handleDeleteLink}
             onDeleteGroup={handleDeleteGroup}
+            viewMode={viewMode}
           />
         </div>
       </div>
