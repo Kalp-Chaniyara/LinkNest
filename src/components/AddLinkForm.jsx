@@ -71,7 +71,6 @@ const AddLinkForm = ({ onAddLink, onCreateGroup, groups = [] }) => {
                 onChange={(e) =>
                   setFormData({ ...formData, title: e.target.value })
                 }
-                className="bg-white/90"
                 required
               />
             </div>
@@ -90,7 +89,7 @@ const AddLinkForm = ({ onAddLink, onCreateGroup, groups = [] }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, url: e.target.value })
                   }
-                  className="pl-10 bg-white/90"
+                  className="pl-10"
                   required
                 />
               </div>
@@ -108,7 +107,6 @@ const AddLinkForm = ({ onAddLink, onCreateGroup, groups = [] }) => {
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              className="bg-white/90"
             />
           </div>
 
@@ -144,7 +142,6 @@ const AddLinkForm = ({ onAddLink, onCreateGroup, groups = [] }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, newGroup: e.target.value })
                   }
-                  className="bg-white/90"
                 />
               </div>
             ) : (
@@ -154,7 +151,7 @@ const AddLinkForm = ({ onAddLink, onCreateGroup, groups = [] }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, group: e.target.value })
                   }
-                  className="w-full h-11 rounded-lg border border-input bg-white/90 backdrop-blur-sm px-4 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-linkify-500 focus-visible:ring-offset-2"
+                  className="w-full h-11 rounded-lg border border-white/30 bg-white/95 backdrop-blur-sm px-4 py-2 text-slate-800 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-linkify-500 focus-visible:ring-offset-2"
                 >
                   <option value="">Select a group (optional)</option>
                   {groups.map((group) => (
