@@ -4,7 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Folder, ExternalLink, Trash2 } from "lucide-react";
 import LinkCard from "./LinkCard";
 
-const GroupCard = ({ group, links, onDeleteLink, onDeleteGroup }) => {
+const GroupCard = ({
+  group,
+  links,
+  onDeleteLink,
+  onDeleteGroup,
+  viewMode = "grid",
+}) => {
   const groupLinks = links.filter((link) => link.group === group.name);
 
   return (
@@ -41,9 +47,20 @@ const GroupCard = ({ group, links, onDeleteLink, onDeleteGroup }) => {
             <p className="text-sm">No links in this group yet</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div
+            className={
+              viewMode === "grid"
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                : "space-y-3"
+            }
+          >
             {groupLinks.map((link) => (
-              <LinkCard key={link.id} link={link} onDelete={onDeleteLink} />
+              <LinkCard
+                key={link.id}
+                link={link}
+                onDelete={onDeleteLink}
+                viewMode={viewMode}
+              />
             ))}
           </div>
         )}

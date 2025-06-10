@@ -4,7 +4,13 @@ import LinkCard from "./LinkCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link2, Folder } from "lucide-react";
 
-const GroupGrid = ({ groups, links, onDeleteLink, onDeleteGroup }) => {
+const GroupGrid = ({
+  groups,
+  links,
+  onDeleteLink,
+  onDeleteGroup,
+  viewMode = "grid",
+}) => {
   const ungroupedLinks = links.filter((link) => !link.group);
 
   return (
@@ -17,6 +23,7 @@ const GroupGrid = ({ groups, links, onDeleteLink, onDeleteGroup }) => {
           links={links}
           onDeleteLink={onDeleteLink}
           onDeleteGroup={onDeleteGroup}
+          viewMode={viewMode}
         />
       ))}
 
@@ -34,9 +41,20 @@ const GroupGrid = ({ groups, links, onDeleteLink, onDeleteGroup }) => {
           </CardHeader>
 
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div
+              className={
+                viewMode === "grid"
+                  ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                  : "space-y-3"
+              }
+            >
               {ungroupedLinks.map((link) => (
-                <LinkCard key={link.id} link={link} onDelete={onDeleteLink} />
+                <LinkCard
+                  key={link.id}
+                  link={link}
+                  onDelete={onDeleteLink}
+                  viewMode={viewMode}
+                />
               ))}
             </div>
           </CardContent>
