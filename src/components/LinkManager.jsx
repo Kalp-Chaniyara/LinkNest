@@ -12,6 +12,8 @@ import {
   Filter,
   Eye,
   EyeOff,
+  Clock,
+  AlertTriangle,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -249,6 +251,69 @@ const LinkManager = () => {
             </CardContent>
           </Card>
         </div>
+        {/* Overdue Reminders Alert */}
+        {overdueLinks.length > 0 && (
+          <Card className="border-red-200 bg-red-50/95 animate-fade-in">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0" />
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold text-red-800 mb-1">
+                    {overdueLinks.length} Overdue Reminder
+                    {overdueLinks.length > 1 ? "s" : ""}
+                  </h3>
+                  <div className="text-xs text-red-700 space-y-1">
+                    {overdueLinks.slice(0, 3).map((link) => (
+                      <div key={link.id} className="flex items-center gap-2">
+                        <span className="font-medium">{link.title}</span>
+                        {link.reminderNote && (
+                          <span className="text-red-600">
+                            - {link.reminderNote}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                    {overdueLinks.length > 3 && (
+                      <div className="text-red-600 font-medium">
+                        +{overdueLinks.length - 3} more overdue
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Upcoming Reminders */}
+        {upcomingReminders.length > 0 && (
+          <Card className="border-blue-200 bg-blue-50/95 animate-fade-in">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <Clock className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold text-blue-800 mb-1">
+                    {upcomingReminders.length} Reminder
+                    {upcomingReminders.length > 1 ? "s" : ""} Due Soon
+                  </h3>
+                  <div className="text-xs text-blue-700 space-y-1">
+                    {upcomingReminders.map((link) => (
+                      <div key={link.id} className="flex items-center gap-2">
+                        <span className="font-medium">{link.title}</span>
+                        {link.reminderNote && (
+                          <span className="text-blue-600">
+                            - {link.reminderNote}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Controls */}
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between animate-fade-in">
           <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
