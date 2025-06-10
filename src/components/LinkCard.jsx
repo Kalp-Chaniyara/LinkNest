@@ -17,12 +17,12 @@ const LinkCard = ({ link, onDelete }) => {
   };
 
   return (
-    <Card className="group relative overflow-hidden animate-fade-in hover:shadow-2xl transition-all duration-300 border-0 bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-lg">
-      <div className="absolute inset-0 bg-gradient-to-br from-linkify-400/10 to-linkify-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+    <Card className="group relative overflow-hidden animate-fade-in hover:shadow-2xl transition-all duration-300 border-white/40 bg-white/95 backdrop-blur-lg">
+      <div className="absolute inset-0 bg-gradient-to-br from-linkify-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
-          <CardTitle className="text-lg font-semibold line-clamp-2 text-gray-800 group-hover:text-linkify-700 transition-colors">
+          <CardTitle className="text-lg font-semibold line-clamp-2 text-slate-800 group-hover:text-linkify-700 transition-colors">
             {link.title}
           </CardTitle>
           <Button
@@ -36,7 +36,7 @@ const LinkCard = ({ link, onDelete }) => {
         </div>
 
         {link.description && (
-          <p className="text-sm text-muted-foreground line-clamp-2 mt-2">
+          <p className="text-sm text-slate-600 line-clamp-2 mt-2">
             {link.description}
           </p>
         )}
@@ -44,13 +44,13 @@ const LinkCard = ({ link, onDelete }) => {
 
       <CardContent className="pt-0">
         <div className="space-y-4">
-          <div className="text-xs text-muted-foreground flex items-center gap-1">
+          <div className="text-xs text-slate-500 flex items-center gap-1">
             <Calendar className="h-3 w-3" />
             {formatDate(link.createdAt)}
           </div>
 
           <div className="flex items-center justify-between">
-            <div className="text-xs text-linkify-600 font-medium bg-linkify-50 px-2 py-1 rounded-full">
+            <div className="text-xs text-linkify-700 font-medium bg-linkify-100 px-2 py-1 rounded-full">
               {link.group || "Ungrouped"}
             </div>
 
@@ -65,7 +65,7 @@ const LinkCard = ({ link, onDelete }) => {
             </Button>
           </div>
 
-          <div className="text-xs text-muted-foreground truncate bg-gray-50 px-2 py-1 rounded">
+          <div className="text-xs text-slate-500 truncate bg-slate-100 px-2 py-1 rounded">
             {link.url}
           </div>
         </div>

@@ -128,34 +128,38 @@ const LinkManager = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in">
-          <Card className="glass">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
+          <Card className="glass border-white/40 bg-white/95">
             <CardContent className="p-6 text-center">
-              <Link2 className="h-8 w-8 mx-auto mb-2 text-linkify-600" />
-              <div className="text-2xl font-bold text-gray-800">
+              <Link2 className="h-10 w-10 mx-auto mb-3 text-linkify-600" />
+              <div className="text-3xl font-bold text-slate-800 mb-1">
                 {totalLinks}
               </div>
-              <div className="text-sm text-muted-foreground">Total Links</div>
+              <div className="text-sm font-medium text-slate-600">
+                Total Links
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="glass">
+          <Card className="glass border-white/40 bg-white/95">
             <CardContent className="p-6 text-center">
-              <FolderOpen className="h-8 w-8 mx-auto mb-2 text-linkify-600" />
-              <div className="text-2xl font-bold text-gray-800">
+              <FolderOpen className="h-10 w-10 mx-auto mb-3 text-ocean-600" />
+              <div className="text-3xl font-bold text-slate-800 mb-1">
                 {totalGroups}
               </div>
-              <div className="text-sm text-muted-foreground">Groups</div>
+              <div className="text-sm font-medium text-slate-600">Groups</div>
             </CardContent>
           </Card>
 
-          <Card className="glass">
+          <Card className="glass border-white/40 bg-white/95">
             <CardContent className="p-6 text-center">
-              <BarChart3 className="h-8 w-8 mx-auto mb-2 text-linkify-600" />
-              <div className="text-2xl font-bold text-gray-800">
+              <BarChart3 className="h-10 w-10 mx-auto mb-3 text-purple-600" />
+              <div className="text-3xl font-bold text-slate-800 mb-1">
                 {totalGroups > 0 ? Math.round(totalLinks / totalGroups) : 0}
               </div>
-              <div className="text-sm text-muted-foreground">Avg per Group</div>
+              <div className="text-sm font-medium text-slate-600">
+                Avg per Group
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -178,7 +182,7 @@ const LinkManager = () => {
               <select
                 value={selectedGroup}
                 onChange={(e) => setSelectedGroup(e.target.value)}
-                className="pl-10 pr-8 h-11 rounded-lg border border-input bg-white/90 backdrop-blur-sm text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-linkify-500 focus-visible:ring-offset-2 w-full sm:w-48"
+                className="pl-10 pr-8 h-11 rounded-lg border border-white/30 bg-white/95 backdrop-blur-sm text-slate-800 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-linkify-500 focus-visible:ring-offset-2 w-full sm:w-48"
               >
                 <option value="">All Groups</option>
                 {groups.map((group) => (
