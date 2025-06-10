@@ -30,6 +30,12 @@ const LinkManager = () => {
       { id: 3, name: "Learning", color: "#f59e0b" },
     ];
 
+    const now = new Date();
+    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
     const mockLinks = [
       {
         id: 1,
@@ -38,6 +44,8 @@ const LinkManager = () => {
         description: "My personal Instagram account",
         group: "Social Media",
         createdAt: new Date().toISOString(),
+        reminderDate: tomorrow.toISOString(),
+        reminderNote: "Check engagement metrics",
       },
       {
         id: 2,
@@ -46,6 +54,8 @@ const LinkManager = () => {
         description: "Professional networking profile",
         group: "Work",
         createdAt: new Date(Date.now() - 86400000).toISOString(),
+        reminderDate: yesterday.toISOString(),
+        reminderNote: "Update profile with new skills",
       },
       {
         id: 3,
@@ -54,6 +64,8 @@ const LinkManager = () => {
         description: "Official React documentation",
         group: "Learning",
         createdAt: new Date(Date.now() - 172800000).toISOString(),
+        reminderDate: nextWeek.toISOString(),
+        reminderNote: "Study new React 19 features",
       },
       {
         id: 4,
@@ -62,6 +74,8 @@ const LinkManager = () => {
         description: "My personal portfolio website",
         group: "",
         createdAt: new Date(Date.now() - 259200000).toISOString(),
+        reminderDate: lastWeek.toISOString(),
+        reminderNote: "Update with latest projects",
       },
     ];
 
@@ -113,6 +127,19 @@ const LinkManager = () => {
   const totalLinks = links.length;
   const totalGroups = groups.length;
 
+  // Calculate reminder statistics
+  const now = new Date();
+  const overdueLinks = links.filter(
+    (link) => link.reminderDate && new Date(link.reminderDate) < now,
+  );
+  const upcomingReminders = links.filter((link) => {
+    if (!link.reminderDate) return false;
+    const reminderDate = new Date(link.reminderDate);
+    const dayFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    return reminderDate >= now && reminderDate <= dayFromNow;
+  });
+  const totalReminders = links.filter((link) => link.reminderDate).length;
+
   return (
     <div className="min-h-screen bg-gradient-linkify p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -128,11 +155,11 @@ const LinkManager = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
           <Card className="glass border-white/40 bg-white/95">
             <CardContent className="p-6 text-center">
-              <Link2 className="h-10 w-10 mx-auto mb-3 text-linkify-600" />
-              <div className="text-3xl font-bold text-slate-800 mb-1">
+              <Link2 className="h-8 w-8 mx-auto mb-2 text-linkify-600" />
+              <div className="text-2xl font-bold text-slate-800 mb-1">
                 {totalLinks}
               </div>
               <div className="text-sm font-medium text-slate-600">
@@ -143,27 +170,85 @@ const LinkManager = () => {
 
           <Card className="glass border-white/40 bg-white/95">
             <CardContent className="p-6 text-center">
-              <FolderOpen className="h-10 w-10 mx-auto mb-3 text-ocean-600" />
-              <div className="text-3xl font-bold text-slate-800 mb-1">
+              <FolderOpen className="h-8 w-8 mx-auto mb-2 text-ocean-600" />
+              <div className="text-2xl font-bold text-slate-800 mb-1">
                 {totalGroups}
               </div>
               <div className="text-sm font-medium text-slate-600">Groups</div>
             </CardContent>
           </Card>
 
+          <Card
+            className={`glass border-white/40 ${overdueLinks.length > 0 ? "bg-red-50/95 border-red-200/60" : "bg-white/95"}`}
+          >
+            <CardContent className="p-6 text-center relative">
+              {overdueLinks.length > 0 && (
+                <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                  !
+                </div>
+              )}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`h-8 w-8 mx-auto mb-2 ${overdueLinks.length > 0 ? "text-red-600" : "text-orange-600"}`}
+              >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12,6 12,12 16,14" />
+              </svg>
+              <div
+                className={`text-2xl font-bold mb-1 ${overdueLinks.length > 0 ? "text-red-800" : "text-slate-800"}`}
+              >
+                {overdueLinks.length}
+              </div>
+              <div
+                className={`text-sm font-medium ${overdueLinks.length > 0 ? "text-red-700" : "text-slate-600"}`}
+              >
+                Overdue
+              </div>
+            </CardContent>
+          </Card>
+
           <Card className="glass border-white/40 bg-white/95">
             <CardContent className="p-6 text-center">
-              <BarChart3 className="h-10 w-10 mx-auto mb-3 text-purple-600" />
-              <div className="text-3xl font-bold text-slate-800 mb-1">
-                {totalGroups > 0 ? Math.round(totalLinks / totalGroups) : 0}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-8 w-8 mx-auto mb-2 text-blue-600"
+              >
+                <path d="M8 2v4" />
+                <path d="M16 2v4" />
+                <rect width="18" height="18" x="3" y="4" rx="2" />
+                <path d="M3 10h18" />
+                <path d="M8 14h.01" />
+                <path d="M12 14h.01" />
+                <path d="M16 14h.01" />
+                <path d="M8 18h.01" />
+                <path d="M12 18h.01" />
+                <path d="M16 18h.01" />
+              </svg>
+              <div className="text-2xl font-bold text-slate-800 mb-1">
+                {totalReminders}
               </div>
               <div className="text-sm font-medium text-slate-600">
-                Avg per Group
+                With Reminders
               </div>
             </CardContent>
           </Card>
         </div>
-
         {/* Controls */}
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between animate-fade-in">
           <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
