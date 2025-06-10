@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Link2, FolderPlus, Tag } from "lucide-react";
+import { Plus, Link2, FolderPlus, Tag, Clock, Bell } from "lucide-react";
 
 const AddLinkForm = ({ onAddLink, onCreateGroup, groups = [] }) => {
   const [formData, setFormData] = useState({
@@ -12,6 +12,8 @@ const AddLinkForm = ({ onAddLink, onCreateGroup, groups = [] }) => {
     description: "",
     group: "",
     newGroup: "",
+    reminderDate: "",
+    reminderNote: "",
   });
 
   const [isCreatingGroup, setIsCreatingGroup] = useState(false);
@@ -26,6 +28,8 @@ const AddLinkForm = ({ onAddLink, onCreateGroup, groups = [] }) => {
       url: formData.url,
       description: formData.description,
       group: isCreatingGroup ? formData.newGroup : formData.group,
+      reminderDate: formData.reminderDate || null,
+      reminderNote: formData.reminderNote || "",
       createdAt: new Date().toISOString(),
     };
 
@@ -45,6 +49,8 @@ const AddLinkForm = ({ onAddLink, onCreateGroup, groups = [] }) => {
       description: "",
       group: "",
       newGroup: "",
+      reminderDate: "",
+      reminderNote: "",
     });
     setIsCreatingGroup(false);
   };
@@ -111,6 +117,45 @@ const AddLinkForm = ({ onAddLink, onCreateGroup, groups = [] }) => {
           </div>
 
           <div className="space-y-4">
+            <div className="space-y-2">
+              <Label
+                htmlFor="reminderDate"
+                className="text-sm font-semibold flex items-center gap-1"
+              >
+                <Bell className="h-4 w-4" />
+                Reminder Date
+              </Label>
+              <Input
+                id="reminderDate"
+                type="datetime-local"
+                value={formData.reminderDate}
+                onChange={(e) =>
+                  setFormData({ ...formData, reminderDate: e.target.value })
+                }
+                min={new Date().toISOString().slice(0, 16)}
+              />
+            </div>
+
+            {formData.reminderDate && (
+              <div className="space-y-2">
+                <Label
+                  htmlFor="reminderNote"
+                  className="text-sm font-semibold flex items-center gap-1"
+                >
+                  <Clock className="h-4 w-4" />
+                  Reminder Note
+                </Label>
+                <Input
+                  id="reminderNote"
+                  placeholder="What should you remember about this link?"
+                  value={formData.reminderNote}
+                  onChange={(e) =>
+                    setFormData({ ...formData, reminderNote: e.target.value })
+                  }
+                />
+              </div>
+            )}
+
             <div className="flex items-center gap-4">
               <Label className="text-sm font-semibold">Group</Label>
               <Button
