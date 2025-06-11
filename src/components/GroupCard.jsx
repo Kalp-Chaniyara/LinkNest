@@ -9,6 +9,7 @@ const GroupCard = ({
   links,
   onDeleteLink,
   onDeleteGroup,
+  onGroupClick,
   viewMode = "grid",
 }) => {
   const groupLinks = links.filter((link) => link.group === group.name);
