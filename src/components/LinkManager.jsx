@@ -16,6 +16,9 @@ import {
   AlertTriangle,
   Grid3X3,
   List,
+  ArrowLeft,
+  Home,
+  ChevronRight,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -26,6 +29,7 @@ const LinkManager = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
   const [viewMode, setViewMode] = useState("grid"); // "grid" or "list"
+  const [drillDownGroup, setDrillDownGroup] = useState(null); // For folder drill-down view
 
   // Mock data for demonstration
   useEffect(() => {
@@ -104,6 +108,10 @@ const LinkManager = () => {
   const handleDeleteGroup = (groupId) => {
     const groupToDelete = groups.find((g) => g.id === groupId);
     if (groupToDelete) {
+      // If we're currently drilling down into this group, go back to main view
+      if (drillDownGroup && drillDownGroup.id === groupId) {
+        setDrillDownGroup(null);
+      }
       // Move links from deleted group to ungrouped
       setLinks(
         links.map((link) =>
@@ -112,6 +120,17 @@ const LinkManager = () => {
       );
       setGroups(groups.filter((g) => g.id !== groupId));
     }
+  };
+
+  const handleGroupClick = (group) => {
+    setDrillDownGroup(group);
+    setSearchTerm(""); // Clear search when drilling down
+  };
+
+  const handleBackToMainView = () => {
+    setDrillDownGroup(null);
+    setSelectedGroup("");
+    setSearchTerm("");
   };
 
   const filteredLinks = links.filter((link) => {
@@ -148,14 +167,53 @@ const LinkManager = () => {
   return (
     <div className="min-h-screen p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
+        {/* Breadcrumb Navigation */}
+        {drillDownGroup && (
+          <div className="animate-fade-in">
+            <Card className="glass border-white/40 bg-white/95">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 text-sm">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleBackToMainView}
+                    className="text-slate-600 hover:text-linkify-600 h-8 px-2"
+                  >
+                    <Home className="h-4 w-4 mr-1" />
+                    Dashboard
+                  </Button>
+                  <ChevronRight className="h-4 w-4 text-slate-400" />
+                  <div className="flex items-center gap-2 text-slate-800 font-medium">
+                    <div
+                      className="w-3 h-3 rounded-full"
+                      style={{ backgroundColor: drillDownGroup.color }}
+                    />
+                    <FolderOpen className="h-4 w-4" />
+                    {drillDownGroup.name}
+                  </div>
+                  <span className="text-slate-500">
+                    (
+                    {
+                      links.filter((link) => link.group === drillDownGroup.name)
+                        .length
+                    }{" "}
+                    links)
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {/* Header */}
         <div className="text-center space-y-4 animate-fade-in">
           <h1 className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg">
-            Your Link Dashboard
+            {drillDownGroup ? drillDownGroup.name : "Your Link Dashboard"}
           </h1>
           <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
-            Organize, manage, and access all your important links in one
-            beautiful place
+            {drillDownGroup
+              ? `Manage all links in the ${drillDownGroup.name} group`
+              : "Organize, manage, and access all your important links in one beautiful place"}
           </p>
         </div>
 
@@ -320,31 +378,50 @@ const LinkManager = () => {
         {/* Controls */}
         <div className="flex flex-col lg:flex-row gap-4 items-center justify-between animate-fade-in">
           <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+            {/* Back Button for Drill-down View */}
+            {drillDownGroup && (
+              <Button
+                variant="outline"
+                onClick={handleBackToMainView}
+                className="bg-white/90 border-white/40 text-slate-700 hover:bg-white"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to All Groups
+              </Button>
+            )}
+
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search links..."
+                placeholder={
+                  drillDownGroup
+                    ? `Search in ${drillDownGroup.name}...`
+                    : "Search links..."
+                }
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 w-full sm:w-64 bg-white/90"
               />
             </div>
 
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <select
-                value={selectedGroup}
-                onChange={(e) => setSelectedGroup(e.target.value)}
-                className="pl-10 pr-8 h-11 rounded-lg border border-white/30 bg-white/95 backdrop-blur-sm text-slate-800 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-linkify-500 focus-visible:ring-offset-2 w-full sm:w-48"
-              >
-                <option value="">All Groups</option>
-                {groups.map((group) => (
-                  <option key={group.id} value={group.name}>
-                    {group.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* Only show group filter in main view */}
+            {!drillDownGroup && (
+              <div className="relative">
+                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <select
+                  value={selectedGroup}
+                  onChange={(e) => setSelectedGroup(e.target.value)}
+                  className="pl-10 pr-8 h-11 rounded-lg border border-white/30 bg-white/95 backdrop-blur-sm text-slate-800 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-linkify-500 focus-visible:ring-offset-2 w-full sm:w-48"
+                >
+                  <option value="">All Groups</option>
+                  {groups.map((group) => (
+                    <option key={group.id} value={group.name}>
+                      {group.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3 w-full lg:w-auto">
@@ -409,7 +486,9 @@ const LinkManager = () => {
             links={filteredLinks}
             onDeleteLink={handleDeleteLink}
             onDeleteGroup={handleDeleteGroup}
+            onGroupClick={handleGroupClick}
             viewMode={viewMode}
+            drillDownGroup={drillDownGroup}
           />
         </div>
       </div>
