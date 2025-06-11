@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Folder, ExternalLink, Trash2 } from "lucide-react";
+import { Folder, ExternalLink, Trash2, ChevronRight } from "lucide-react";
 import LinkCard from "./LinkCard";
 
 const GroupCard = ({
@@ -14,20 +14,24 @@ const GroupCard = ({
   const groupLinks = links.filter((link) => link.group === group.name);
 
   return (
-    <Card className="w-full animate-fade-in">
+    <Card className="w-full animate-fade-in group">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-xl">
+          <div
+            className="flex items-center gap-2 text-xl cursor-pointer hover:text-linkify-600 transition-colors group-hover:text-linkify-700"
+            onClick={() => onGroupClick && onGroupClick(group)}
+          >
             <div
               className="w-4 h-4 rounded-full"
               style={{ backgroundColor: group.color }}
             />
             <Folder className="h-5 w-5 text-linkify-600" />
-            {group.name}
+            <CardTitle className="text-xl">{group.name}</CardTitle>
             <span className="text-sm text-slate-600 font-normal">
               ({groupLinks.length} links)
             </span>
-          </CardTitle>
+            <ChevronRight className="h-4 w-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
 
           <Button
             variant="ghost"
@@ -38,6 +42,12 @@ const GroupCard = ({
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
+
+        {groupLinks.length > 0 && (
+          <div className="text-xs text-slate-500 mt-2">
+            Click the folder name to view all links in this group
+          </div>
+        )}
       </CardHeader>
 
       <CardContent>

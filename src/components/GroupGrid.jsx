@@ -9,7 +9,9 @@ const GroupGrid = ({
   links,
   onDeleteLink,
   onDeleteGroup,
+  onGroupClick,
   viewMode = "grid",
+  drillDownGroup = null,
 }) => {
   const ungroupedLinks = links.filter((link) => !link.group);
 
