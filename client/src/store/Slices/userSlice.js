@@ -1,0 +1,236 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import toast from "react-hot-toast"
+
+const API_URL = "http://localhost:3000/api/auth";
+
+// Async thunks
+export const signup = createAsyncThunk(
+     "user/signup",
+     async ({ fullName, email, password }, { rejectWithValue }) => {
+          try {
+               const response = await axios.post(`${API_URL}/signup`, {
+                    fullName,
+                    email,
+                    password,
+               },
+               { withCredentials: true }
+          );
+               return response.data;
+          } catch (error) {
+               console.error("Signup error details:", error.response?.data);
+               return rejectWithValue(error.response?.data || { message: "Failed to sign up" });
+          }
+     }
+);
+
+export const verifyEmail = createAsyncThunk(
+     "user/verifyEmail",
+     async ({ userId, otp }, { rejectWithValue }) => {
+          try {
+               const response = await axios.post(`${API_URL}/verify-email`, {
+                    userId,
+                    otp,
+               },
+               { withCredentials: true }
+          );
+               return response.data;
+          } catch (error) {
+               return rejectWithValue(error.response.data);
+          }
+     }
+);
+
+export const resendOTP = createAsyncThunk(
+     "user/resendOTP",
+     async (userId, { rejectWithValue }) => {
+          try {
+               const response = await axios.post(`${API_URL}/resend-otp`, {
+                    userId,
+               },
+               { withCredentials: true }
+          );
+               return response.data;
+          } catch (error) {
+               return rejectWithValue(error.response.data);
+          }
+     }
+);
+
+export const login = createAsyncThunk(
+     "user/login",
+     async ({ email, password }, { rejectWithValue }) => {
+          try {
+               const response = await axios.post(
+                    `${API_URL}/login`,
+                    {
+                         email,
+                         password,
+                    },
+                    { withCredentials: true }
+               );
+               return response.data;
+          } catch (error) {
+               return rejectWithValue(error.response.data);
+          }
+     }
+);
+
+export const logout = createAsyncThunk(
+     "user/logout",
+     async (_, { rejectWithValue }) => {
+          try {
+               const response = await axios.post(
+                    `${API_URL}/logout`,
+                    {},
+                    { withCredentials: true }
+               );
+               return response.data;
+          } catch (error) {
+               return rejectWithValue(error.response.data);
+          }
+     }
+);
+
+export const checkAuth = createAsyncThunk(
+     "user/checkAuth",
+     async (_, { rejectWithValue }) => {
+          try {
+               console.log('Checking auth status...');
+               const response = await axios.get(`${API_URL}/check`, {
+                    withCredentials: true,
+               });
+               console.log('Auth check response:', response.data);
+               return response.data;
+          } catch (error) {
+               console.error('Auth check error:', error);
+               return rejectWithValue(error.response?.data || { message: 'Authentication failed' });
+          }
+     }
+);
+
+const initialState = {
+     user: null,
+     loading: false,
+     error: null,
+     isLogin: false,
+     showVerificationModal: false,
+     verificationStatus: {
+          isVerifying: false,
+          isVerified: false,
+          error: null,
+     },
+};
+
+const userSlice = createSlice({
+     name: "user",
+     initialState,
+     reducers: {
+          clearError: (state) => {
+               state.error = null;
+               state.verificationStatus.error = null;
+          },
+          setUser: (state, action) => {
+               state.user = action.payload;
+               state.isLogin = true;
+               state.loading = false;
+               state.error = null;
+          }
+     },
+     extraReducers: (builder) => {
+          builder
+               // Signup
+               .addCase(signup.pending, (state) => {
+                    state.loading = true;
+                    state.error = null;
+               })
+               .addCase(signup.fulfilled, (state, action) => {
+                    state.loading = false;
+                    state.user = { _id: action.payload.data.userId, email: action.payload.data.email, isEmailVerified: false };
+                    state.showVerificationModal = true;
+                    console.log("IT should show now")
+               })
+               .addCase(signup.rejected, (state, action) => {
+                    state.loading = false;
+                    state.error = action.payload;
+               })
+               // Verify Email
+               .addCase(verifyEmail.pending, (state) => {
+                    state.verificationStatus.isVerifying = true;
+                    state.verificationStatus.error = null;
+               })
+               .addCase(verifyEmail.fulfilled, (state) => {
+                    state.verificationStatus.isVerifying = false;
+                    state.verificationStatus.isVerified = true;
+                    state.isLogin=true;
+                    state.user.isEmailVerified = true;
+                    state.showVerificationModal = false;
+               })
+               .addCase(verifyEmail.rejected, (state, action) => {
+                    state.isLogin=false;
+                    state.verificationStatus.isVerifying = false;
+                    state.verificationStatus.error = action.payload;
+               })
+               // Resend OTP
+               .addCase(resendOTP.pending, (state) => {
+                    state.verificationStatus.isVerifying = true;
+                    state.verificationStatus.error = null;
+               })
+               .addCase(resendOTP.fulfilled, (state) => {
+                    state.verificationStatus.isVerifying = false;
+               })
+               .addCase(resendOTP.rejected, (state, action) => {
+                    state.verificationStatus.isVerifying = false;
+                    state.verificationStatus.error = action.payload;
+               })
+               // Login
+               .addCase(login.pending, (state) => {
+                    state.loading = true;
+                    state.error = null;
+               })
+               .addCase(login.fulfilled, (state, action) => {
+                    state.loading = false;
+                    state.user = action.payload.data;
+                    state.isLogin = true;
+               })
+               .addCase(login.rejected, (state, action) => {
+                    state.loading = false;
+                    state.error = action.payload;
+                    state.isLogin = false;
+               })
+               // Logout
+               .addCase(logout.fulfilled, (state) => {
+                    state.user = null;
+                    state.isLogin = false;
+                    state.verificationStatus = {
+                         isVerifying: false,
+                         isVerified: false,
+                         error: null,
+                    };
+               })
+               // Check Auth
+               .addCase(checkAuth.pending, (state) => {
+                    console.log('Auth check pending');
+                    state.loading = true;
+                    state.error = null;
+               })
+               .addCase(checkAuth.fulfilled, (state, action) => {
+                    console.log('Auth check fulfilled:', action.payload);
+                    state.loading = false;
+                    state.user = action.payload.data;
+                    state.isLogin = true;
+                    state.error = null;
+               })
+               .addCase(checkAuth.rejected, (state, action) => {
+                    console.log('Auth check rejected:', action.payload);
+                    state.loading = false;
+                    state.user = null;
+                    state.isLogin = false;
+                    state.error = action.payload;
+               });
+     },
+});
+
+export const { clearError, setUser } = userSlice.actions;
+export { userSlice };
+export default userSlice.reducer;
