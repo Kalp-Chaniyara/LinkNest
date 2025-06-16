@@ -14,21 +14,21 @@ const ProtectedRoute = ({ children }) => {
   const { isLogin, loading, user } = useSelector((state) => state.user);
 
   useEffect(() => {
-    console.log('ProtectedRoute mounted, checking auth...');
+    // console.log('ProtectedRoute mounted, checking auth...');
     dispatch(checkAuth())
       .unwrap()
       .then(() => {
-        console.log('Auth check successful');
+        // console.log('Auth check successful');
       })
       .catch((error) => {
-        console.error('Auth check failed:', error);
+        // console.error('Auth check failed:', error);
       });
   }, [dispatch]);
 
-  console.log('Current auth state:', { isLogin, loading, user });
+  // console.log('Current auth state:', { isLogin, loading, user });
 
   if (loading) {
-    console.log('Showing loading state');
+    // console.log('Showing loading state');
     return (
       <div className="min-h-screen bg-gradient-linkify flex items-center justify-center">
         <Card className="glass border-white/40 bg-white/95">
@@ -42,7 +42,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!isLogin || !user) {
-    console.log('Showing auth required state');
+    // console.log('Showing auth required state');
     return (
       <div className="min-h-screen bg-gradient-linkify flex items-center justify-center p-4">
         <Card className="w-full max-w-md glass border-white/40 bg-white/95">
@@ -87,7 +87,7 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  console.log('Rendering protected content');
+  // console.log('Rendering protected content');
   return children;
 };
 

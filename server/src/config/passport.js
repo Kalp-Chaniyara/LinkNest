@@ -22,25 +22,35 @@ passport.use(new GoogleStrategy({
      clientID: GOOGLE_CONFIG.clientID,
      clientSecret: GOOGLE_CONFIG.clientSecret,
      callbackURL: GOOGLE_CONFIG.callbackURL,
-     scope: ['profile', 'email']
+     scope: GOOGLE_CONFIG.scope
 }, async (accessToken, refreshToken, profile, done) => {
      try {
           // Check if user already exists
           let user = await User.findOne({ googleId: profile.id });
 
           if (user) {
-               return done(null, user);
+               // Update tokens for existing user
+               user.googleAccessToken = accessToken;
+               user.googleRefreshToken = refreshToken;
+               user.tokenExpiryDate = new Date(Date.now() + 3*60 * 1000); // 1 hour expiry
+               // console.log("USER 1",user);
+               await user.save();
+               return done(null, user, { accessToken, refreshToken });
           }
 
           // Check if user exists with same email but different auth method
           user = await User.findOne({ email: profile.emails[0].value });
-
+          // console.log("USER 2",user);
+          
           if (user) {
                // Link Google account to existing user
                user.googleId = profile.id;
-               // Don't automatically verify email
+               user.googleAccessToken = accessToken;
+               user.googleRefreshToken = refreshToken;
+               user.tokenExpiryDate = new Date(Date.now() + 3600 * 1000); // 1 hour expiry
                await user.save();
-               return done(null, user);
+               // console.log("USER 3",user);
+               return done(null, user, { accessToken, refreshToken });
           }
 
           // Create new user
@@ -48,19 +58,14 @@ passport.use(new GoogleStrategy({
                fullName: profile.displayName,
                email: profile.emails[0].value,
                googleId: profile.id,
-               isEmailVerified: false // Don't automatically verify email
+               googleAccessToken: accessToken,
+               googleRefreshToken: refreshToken,
+               tokenExpiryDate: new Date(Date.now() + 3*60 * 1000), // 1 hour expiry
+               isEmailVerified: true, // Automatically verify email for Google sign-ups
+               authMethod: 'google' // Set authentication method to google
           });
-
-          // Generate and send OTP for email verification
-          const otp = generateOTP();
-          user.otpSecret = otp.secret;
-          user.otpExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
-          await user.save();
-
-          // Send OTP email
-          await sendOTPEmail(user.email, otp.token);
-
-          return done(null, user);
+          // console.log("USER 4",user);
+          return done(null, user, { accessToken, refreshToken });
      } catch (error) {
           return done(error, null);
      }

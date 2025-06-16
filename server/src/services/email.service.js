@@ -21,17 +21,17 @@ transporter.verify(function(error, success) {
     if (error) {
         console.error('SMTP configuration error:', error);
     } else {
-        console.log('SMTP server is ready to take our messages');
+        // console.log('SMTP server is ready to take our messages');
     }
 });
 
 export const sendOTPEmail = async (email, otp) => {
     try {
-        console.log('Attempting to send email with config:', {
-            from: process.env.EMAIL_USER,
-            to: email,
-            hasPassword: !!process.env.EMAIL_PASS
-        });
+        // console.log('Attempting to send email with config:', {
+        //     from: process.env.EMAIL_USER,
+        //     to: email,
+        //     hasPassword: !!process.env.EMAIL_PASS
+        // });
 
         if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
             throw new Error('Email configuration is missing. Please check your environment variables.');
@@ -59,18 +59,18 @@ export const sendOTPEmail = async (email, otp) => {
             `
         };
 
-        console.log('Sending email:', {
-            from: mailOptions.from,
-            to: mailOptions.to,
-            subject: mailOptions.subject
-        });
+        // console.log('Sending email:', {
+        //     from: mailOptions.from,
+        //     to: mailOptions.to,
+        //     subject: mailOptions.subject
+        // });
 
         const info = await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully:', {
-            messageId: info.messageId,
-            to: info.envelope.to,
-            from: info.envelope.from
-        });
+        // console.log('Email sent successfully:', {
+        //     messageId: info.messageId,
+        //     to: info.envelope.to,
+        //     from: info.envelope.from
+        // });
         return true;
     } catch (error) {
         console.error('Detailed error sending OTP email:', {
@@ -80,5 +80,48 @@ export const sendOTPEmail = async (email, otp) => {
             command: error.command
         });
         throw new Error('Failed to send OTP email');
+    }
+};
+
+//new part below
+
+export const sendReminderEmail = async (email, link) => {
+    try {
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+            throw new Error('Email configuration is missing. Please check your environment variables.');
+        }
+
+        const mailOptions = {
+            from: {
+                name: 'Linkable',
+                address: process.env.EMAIL_USER
+            },
+            to: email,
+            subject: `Reminder: ${link.title} - Linkable`,
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #333;">Reminder from Linkable</h2>
+                    <p>This is a reminder for the following link:</p>
+                    <div style="background-color: #f4f4f4; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <h3 style="color: #007bff; margin: 0;">${link.title}</h3>
+                        ${link.reminderNote ? `<p style="margin: 10px 0;">${link.reminderNote}</p>` : ''}
+                        <p style="margin: 10px 0;"><a href="${link.url}" style="color: #007bff; text-decoration: none;">Visit Link →</a></p>
+                    </div>
+                    <p>You can manage your reminders in your Linkable dashboard.</p>
+                    <hr style="border: 1px solid #eee; margin: 20px 0;">
+                    <p style="color: #666; font-size: 12px;">This is an automated email, please do not reply.</p>
+                </div>
+            `
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        // console.log('Reminder email sent successfully:', {
+        //     messageId: info.messageId,
+        //     to: info.envelope.to
+        // });
+        return true;
+    } catch (error) {
+        console.error('Error sending reminder email:', error);
+        throw new Error('Failed to send reminder email');
     }
 }; 

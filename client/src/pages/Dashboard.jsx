@@ -6,6 +6,7 @@ import { logout, checkAuth } from "../store/Slices/userSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import PushNotificationManager from "@/components/PushNotificationManager";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -24,14 +25,14 @@ const Dashboard = () => {
   useEffect(() => {
     // Redirect to login if not authenticated
     if (!isLoading && !user) {
-      navigate('/login');
+      navigate('/signup');
     }
   }, [user, isLoading, navigate]);
 
   const handleLogout = async () => {
     try {
       await dispatch(logout()).unwrap();
-      navigate('/login');
+      navigate('/signup');
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -81,6 +82,7 @@ const Dashboard = () => {
       <div className="pt-4">
         <LinkManager />
       </div>
+      <PushNotificationManager />
     </div>
   );
 };

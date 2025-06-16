@@ -7,15 +7,16 @@ import authRoutes from "./routes/auth.routes.js";
 import linkRoutes from "./routes/link.routes.js";
 import passport from './config/passport.js';
 import session from 'express-session';
+import { initializeReminders } from './services/reminder.service.js';
 
 dotenv.config();
 
 // Verify environment variables
-console.log('Environment variables loaded:', {
-    hasEmailUser: !!process.env.EMAIL_USER,
-    hasEmailPass: !!process.env.EMAIL_PASS,
-    emailUser: process.env.EMAIL_USER
-});
+// console.log('Environment variables loaded:', {
+//     hasEmailUser: !!process.env.EMAIL_USER,
+//     hasEmailPass: !!process.env.EMAIL_PASS,
+//     emailUser: process.env.EMAIL_USER
+// });
 
 const app = express();
 
@@ -53,6 +54,11 @@ app.use("/api/link", linkRoutes);
 mongoose.connect(process.env.MONGODB_URI)
      .then(() => console.log("Connected to MongoDB"))
      .catch((err) => console.error("MongoDB connection error:", err));
+
+// Initialize reminders for all active links
+initializeReminders().catch(error => {
+    console.error('Failed to initialize reminders:', error);
+});
 
 // Server
 const PORT = process.env.PORT || 3000;

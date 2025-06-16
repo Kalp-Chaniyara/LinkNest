@@ -61,10 +61,11 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: true,
             unique: true,
+            lowercase: true,
         },
         password: {
             type: String,
-            required: true,
+            required: function() { return this.authMethod === 'local'; },
         },
         isEmailVerified: {
             type: Boolean,
@@ -83,13 +84,34 @@ const userSchema = new mongoose.Schema(
         resetTokenExpiry: {
             type: Date,
             default: null
-        }
+        },
+        googleId: {
+            type: String,
+            sparse: true
+        },
+        googleAccessToken: {
+            type: String
+        },
+        googleRefreshToken: {
+            type: String
+        },
+        tokenExpiryDate: {
+            type: Date
+        },
+        authMethod: {
+            type: String,
+            enum: ['local', 'google'],
+            default: 'local'
+        },
+        otp: String,
+        otpExpires: Date,
+        pushSubscriptions: [Object],
     },
     { timestamps: true }
 );
 
-userSchema.index({ email: 1 });
-userSchema.index({ googleId: 1 });
+// userSchema.index({ email: 1 });
+// userSchema.index({ googleId: 1 });
 
 const User = mongoose.model('User', userSchema);
 

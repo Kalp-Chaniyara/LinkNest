@@ -12,15 +12,15 @@ export const verifyOTP = (storedOtp, receivedOtp, otpExpiry) => {
     try {
         // Check if OTP has expired
         if (Date.now() > otpExpiry) {
-            console.log("OTP has expired.");
+            // console.log("OTP has expired.");
             return false;
         }
 
         // Compare the stored OTP with the received OTP
         const isValid = storedOtp === receivedOtp;
-        console.log("Stored OTP:", storedOtp);
-        console.log("Received OTP:", receivedOtp);
-        console.log("OTP is valid:", isValid);
+        // console.log("Stored OTP:", storedOtp);
+        // console.log("Received OTP:", receivedOtp);
+        // console.log("OTP is valid:", isValid);
         return isValid;
     } catch (error) {
         console.error("OTP verification error:", error);

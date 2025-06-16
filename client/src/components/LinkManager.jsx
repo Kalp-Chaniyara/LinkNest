@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import AddLinkForm from "./AddLinkForm";
 import GroupGrid from "./GroupGrid";
 import { Button } from "@/components/ui/button";
@@ -19,11 +19,13 @@ import {
   ArrowLeft,
   Home,
   ChevronRight,
+  Calendar,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { axiosInstance } from "../lib/axios.js";
 import { useSelector } from "react-redux";
 import { useToast } from "@/hooks/use-toast";
+import GoogleCalendarSync from "./GoogleCalendarSync";
 
 const LinkManager = () => {
   const { toast } = useToast();
@@ -36,7 +38,29 @@ const LinkManager = () => {
   const [drillDownGroup, setDrillDownGroup] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const googleSyncRef = useRef(null); // Create a ref
+
   const user = useSelector((state) => state.user.user);
+
+  const fetchLinks = async () => {
+    try {
+      const linksResponse = await axiosInstance.get("/link/fetchLinks");
+      setLinks(linksResponse.data || []);
+
+      // After fetching links, check for any that need calendar syncing
+      syncPendingCalendarEvents(linksResponse.data || []);
+
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load your links and groups",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,8 +71,7 @@ const LinkManager = () => {
         setGroups(groupsResponse.data || []);
 
         // Fetch links
-        const linksResponse = await axiosInstance.get("/link/fetchLinks");
-        setLinks(linksResponse.data || []);
+        await fetchLinks();
       } catch (error) {
         console.error("Error fetching data:", error);
         toast({
@@ -68,9 +91,32 @@ const LinkManager = () => {
 
   const handleAddLink = async (newLink) => {
     try {
-      // Update links with the new link data
-      setLinks(prevLinks => [...prevLinks, newLink]);
-      setShowAddForm(false);
+      // Add the link to the database
+      const response = await axiosInstance.post("/link/addLink", newLink);
+      
+      if (response.data.success) {
+        if (response.data.needsTokenRefresh) {
+          toast({
+            title: "Google Calendar Sync Required",
+            description: "Your Google Calendar access needs to be refreshed. Please click 'Sync with Google Calendar' to re-authorize.",
+            variant: "default",
+            duration: 5000
+          });
+          handleTokenRefreshed(); // Call the refresh handler
+          return; // Exit here, as a re-authorization is needed
+        }
+
+        // Update links with the new link data
+        setLinks(prevLinks => [...prevLinks, response.data]);
+        setShowAddForm(false);
+        
+        // Show success toast
+        toast({
+          title: "Success",
+          description: "Link added successfully",
+          variant: "default",
+        });
+      }
     } catch (error) {
       console.error("Error adding link:", error);
       toast({
@@ -84,15 +130,15 @@ const LinkManager = () => {
   const handleCreateGroup = async (newGroup) => {
     try {
       // Create a temporary link with a unique title for the group
-      const tempLink = {
-        title: `Group_${Date.now()}`,
-        url: "https://group.placeholder",
-        description: "Group placeholder",
-        group: newGroup,
-        isNewGrp: true
-      };
+      // const tempLink = {
+      //   title: `Group_${Date.now()}`,
+      //   url: "https://group.placeholder",
+      //   description: "Group placeholder",
+      //   group: newGroup,
+      //   isNewGrp: true
+      // };
 
-      const response = await axiosInstance.post("/link/addLink", tempLink);
+      // const response = await axiosInstance.post("/link/addLink", tempLink);
       
       // Update groups with the new group data
       setGroups(prevGroups => [...prevGroups, newGroup]);
@@ -156,6 +202,57 @@ const LinkManager = () => {
     }
   };
 
+  const handleTokenRefreshed = () => {
+    // Refresh the links list to update calendar sync status
+    fetchLinks();
+    // Show success toast
+    toast({
+      title: "Success",
+      description: "Google Calendar access has been restored. Your reminder will be added to your calendar.",
+      variant: "default",
+    });
+  };
+
+  const syncPendingCalendarEvents = async (currentLinks) => {
+    // console.log("syncPendingCalendarEvents called with links:", currentLinks);
+    for (const link of currentLinks) {
+      // console.log(`Checking link ${link._id}: reminderDate=${link.reminderDate}, calendarEventId=${link.calendarEventId}`);
+      if (link.reminderDate && !link.calendarEventId) {
+        // console.log(`Attempting to sync pending calendar event for link: ${link.title} (${link._id})`);
+        try {
+          const response = await axiosInstance.post(`/link/syncCalendarEvent/${link._id}`);
+          // console.log(`Sync calendar event response for link ${link._id}:`, response.data);
+          if (response.data.success) {
+            setLinks(prevLinks => prevLinks.map(l => l._id === link._id ? response.data.link : l));
+            toast({
+              title: "Calendar Synced",
+              description: `Reminder for "${link.title}" has been added to Google Calendar.`, 
+              variant: "default"
+            });
+          } else if (response.data.needsTokenRefresh) {
+            toast({
+              title: "Google Calendar Sync Required",
+              description: "Your Google Calendar access needs to be refreshed to sync all reminders. Please click 'Sync with Google Calendar' to re-authorize.",
+              variant: "default",
+              duration: 5000
+            });
+            // Removed: handleTokenRefreshed(); // Trigger re-authorization flow
+            // Removed: return; // Exit if token refresh is needed for any link
+          } else {
+            console.error(`Server reported failure for link ${link._id}:`, response.data.message);
+          }
+        } catch (error) {
+          console.error(`Error syncing calendar event for link ${link._id}:`, error);
+          toast({
+            title: "Sync Error",
+            description: `Failed to sync calendar for "${link.title}". Please try re-authorizing Google Calendar.`, 
+            variant: "destructive"
+          });
+        }
+      }
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -208,7 +305,20 @@ const LinkManager = () => {
 
   return (
     <div className="min-h-screen p-4 md:p-6 lg:p-8">
+      <GoogleCalendarSync onTokenRefreshed={handleTokenRefreshed} ref={googleSyncRef} />
       <div className="max-w-7xl mx-auto space-y-8">
+        {/* Google Calendar Sync Button */}
+        {/* <div className="flex justify-end">
+          <Button
+            onClick={() => googleSyncRef.current?.triggerSync()}
+            variant="outline"
+            className="text-linkify-700 border-linkify-700 hover:bg-linkify-50"
+          >
+            <Calendar className="h-4 w-4 mr-2" />
+            Sync Google Calendar
+          </Button>
+        </div> */}
+
         {/* Breadcrumb Navigation */}
         {drillDownGroup && (
           <div className="animate-fade-in">
@@ -521,6 +631,7 @@ const LinkManager = () => {
               onAddLink={handleAddLink}
               onCreateGroup={handleCreateGroup}
               groups={groups}
+              onGoogleSyncNeeded={handleTokenRefreshed}
             />
           </div>
         )}

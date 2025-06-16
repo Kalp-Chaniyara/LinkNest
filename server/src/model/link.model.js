@@ -35,13 +35,20 @@ const linkSchema = new mongoose.Schema({
      reminderNote: {
           type: String,
      },
+     calendarEventId: {
+          type: String,
+     },
      isFavorite: {
           type: Boolean,
           default: false
      },
      tags: [{
           type: String
-     }]
+     }],
+     createdAt: {
+          type: Date,
+          default: Date.now
+     }
 }, {
      timestamps: true,
 });

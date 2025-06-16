@@ -8,6 +8,7 @@ import {
   Clock,
   AlertTriangle,
   Bell,
+  CheckCircle2,
 } from "lucide-react";
 
 const LinkCard = ({ link, onDelete, viewMode = "grid" }) => {
@@ -33,6 +34,8 @@ const LinkCard = ({ link, onDelete, viewMode = "grid" }) => {
       minute: "2-digit",
     });
   };
+
+  // console.log("LinkCard render - Link ID:", link._id, "Reminder Date:", link.reminderDate, "Calendar Event ID:", link.calendarEventId);
 
   const getReminderStatus = () => {
     if (!link.reminderDate) return null;
@@ -156,6 +159,23 @@ const LinkCard = ({ link, onDelete, viewMode = "grid" }) => {
                     </div>
                   </div>
 
+                  {/* Calendar Sync Status */}
+                  {link.reminderDate && (
+                    <div className="flex items-center gap-1 text-xs mt-2">
+                      {link.calendarEventId ? (
+                        <div className="text-green-600 bg-green-50 px-2 py-1 rounded-full flex items-center gap-1">
+                          <CheckCircle2 className="h-3 w-3" />
+                          <span>Added to Calendar</span>
+                        </div>
+                      ) : (
+                        <div className="text-slate-500 bg-slate-50 px-2 py-1 rounded-full flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          <span>Calendar Sync Pending</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Visit Button */}
                   <Button
                     onClick={handleVisit}
@@ -205,6 +225,23 @@ const LinkCard = ({ link, onDelete, viewMode = "grid" }) => {
             <Clock className="h-3 w-3" />
           )}
           {reminderStatus.label}
+        </div>
+      )}
+
+      {/* Add Calendar Integration Status */}
+      {link.reminderDate && (
+        <div className="absolute bottom-3 right-3 flex items-center gap-1">
+          {link.calendarEventId ? (
+            <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
+              <CheckCircle2 className="h-3 w-3" />
+              <span>Added to Calendar</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 text-xs text-slate-500 bg-slate-50 px-2 py-1 rounded-full">
+              <Calendar className="h-3 w-3" />
+              <span>Calendar Sync Pending</span>
+            </div>
+          )}
         </div>
       )}
 

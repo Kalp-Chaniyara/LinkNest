@@ -3,17 +3,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { verifyEmail, resendOTP } from '../store/Slices/userSlice';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const EmailVerification = () => {
      const dispatch = useDispatch();
      const navigate = useNavigate();
-     const { user, verificationStatus, showVerificationModal } = useSelector((state) => state.user);
+
+     const userSliceState = useSelector((state) => state.user);
+     const { user, showVerificationModal } = userSliceState; // Destructure from the full state
+
      const [otp, setOtp] = useState('');
 
      useEffect(() => {
-          console.log("Modal visibility:", showVerificationModal);
-          console.log("User state:", user);
-        }, [showVerificationModal, user]);
+          // console.log("Modal visibility:", showVerificationModal);
+          // console.log("User state from useEffect:", user);
+     }, [showVerificationModal, user]);
 
      const handleVerify = async (e) => {
           e.preventDefault();
@@ -22,22 +26,31 @@ const EmailVerification = () => {
                return;
           }
 
-          console.log('Attempting to verify email...');
-          console.log('User ID:', user?._id);
-          console.log('OTP entered:', otp);
+          const currentUserId = userSliceState.user?._id; // Access user ID directly from the current state
+
+          if (!currentUserId) {
+               toast.error('User ID is missing for verification. Please try signing up again.');
+               console.error("User ID is undefined during verification attempt. Full user slice state:", userSliceState);
+               return;
+          }
+
+          // console.log('Attempting to verify email...');
+          // console.log('User ID being sent:', currentUserId);
+          // console.log('OTP entered:', otp);
 
           try {
                const result = await dispatch(verifyEmail({
-                    userId: user._id,
+                    userId: currentUserId,
                     otp
                })).unwrap();
 
                if (result.success) {
                     toast.success('Email verified successfully!');
-                    console.log('Email verification successful!', result);
-                    navigate('/dashboard'); // Redirect to dashboard on success
+                    // console.log('Email verification successful!', result);
+                    navigate('/dashboard');
                } else {
-                    console.log('Email verification failed with success: false', result);
+                    // console.log('Email verification failed with success: false', result);
+                    toast.error(result.message || 'Failed to verify email');
                }
           } catch (error) {
                console.error('Error during email verification:', error);
@@ -45,19 +58,20 @@ const EmailVerification = () => {
           }
      };
 
-     const handleResendOTP = async () => {
-          console.log('Attempting to resend OTP...');
-          console.log('User ID for resend:', user?._id);
+     const handleResendOtp = async () => {
+          if (!user || !user._id) {
+               toast.error('User data missing for OTP resend. Please try signing up again.');
+               return;
+          }
           try {
                const result = await dispatch(resendOTP(user._id)).unwrap();
                if (result.success) {
-                    toast.success('New OTP sent successfully!');
-                    console.log('Resend OTP successful!', result);
+                    toast.success('New OTP sent to your email!');
                } else {
-                    console.log('Resend OTP failed with success: false', result);
+                    toast.error(result.message || 'Failed to resend OTP');
                }
           } catch (error) {
-               console.error('Error during resend OTP:', error);
+               console.error('Error during OTP resend:', error);
                toast.error(error.message || 'Failed to resend OTP');
           }
      };
@@ -88,29 +102,19 @@ const EmailVerification = () => {
                                    maxLength={6}
                               />
                          </div>
-                         <div className="flex flex-col space-y-2">
-                              <button
-                                   type="submit"
-                                   className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                   disabled={verificationStatus.isVerifying}
-                              >
-                                   {verificationStatus.isVerifying ? 'Verifying...' : 'Verify Email'}
-                              </button>
-                              <button
-                                   type="button"
-                                   onClick={handleResendOTP}
-                                   className="w-full text-indigo-600 hover:text-indigo-500 text-sm"
-                                   disabled={verificationStatus.isVerifying}
-                              >
-                                   Resend Code
-                              </button>
-                         </div>
+                         <Button
+                              type="submit"
+                              className="w-full bg-indigo-600 text-white hover:bg-indigo-700"
+                         >
+                              Verify Account
+                         </Button>
                     </form>
-                    {verificationStatus.error && (
-                         <p className="mt-2 text-sm text-red-600">
-                              {verificationStatus.error.message}
-                         </p>
-                    )}
+                    <p className="mt-4 text-sm text-center text-gray-500">
+                         Didn't receive the code?{" "}
+                         <Button variant="link" onClick={handleResendOtp} className="p-0 h-auto text-indigo-600 hover:text-indigo-500">
+                              Resend OTP
+                         </Button>
+                    </p>
                </div>
           </div>
      );

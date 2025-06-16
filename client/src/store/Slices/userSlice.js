@@ -96,14 +96,14 @@ export const checkAuth = createAsyncThunk(
      "user/checkAuth",
      async (_, { rejectWithValue }) => {
           try {
-               console.log('Checking auth status...');
+               // console.log('Checking auth status...');
                const response = await axios.get(`${API_URL}/check`, {
                     withCredentials: true,
                });
-               console.log('Auth check response:', response.data);
+               // console.log('Auth check response:', response.data);
                return response.data;
           } catch (error) {
-               console.error('Auth check error:', error);
+               // console.error('Auth check error:', error);
                return rejectWithValue(error.response?.data || { message: 'Authentication failed' });
           }
      }
@@ -146,9 +146,15 @@ const userSlice = createSlice({
                })
                .addCase(signup.fulfilled, (state, action) => {
                     state.loading = false;
-                    state.user = { _id: action.payload.data.userId, email: action.payload.data.email, isEmailVerified: false };
-                    state.showVerificationModal = true;
-                    console.log("IT should show now")
+                    state.user = action.payload.data;
+                    if (action.payload.data.authMethod === 'google' && action.payload.data.isEmailVerified) {
+                         state.isLogin = true;
+                         state.showVerificationModal = false;
+                    } else {
+                         state.user.isEmailVerified = false;
+                         state.showVerificationModal = true;
+                    }
+                    // console.log("IT should show now")
                })
                .addCase(signup.rejected, (state, action) => {
                     state.loading = false;
@@ -210,19 +216,19 @@ const userSlice = createSlice({
                })
                // Check Auth
                .addCase(checkAuth.pending, (state) => {
-                    console.log('Auth check pending');
+                    // console.log('Auth check pending');
                     state.loading = true;
                     state.error = null;
                })
                .addCase(checkAuth.fulfilled, (state, action) => {
-                    console.log('Auth check fulfilled:', action.payload);
+                    // console.log('Auth check fulfilled:', action.payload);
                     state.loading = false;
                     state.user = action.payload.data;
                     state.isLogin = true;
                     state.error = null;
                })
                .addCase(checkAuth.rejected, (state, action) => {
-                    console.log('Auth check rejected:', action.payload);
+                    // console.log('Auth check rejected:', action.payload);
                     state.loading = false;
                     state.user = null;
                     state.isLogin = false;

@@ -1,5 +1,11 @@
 import Link from "../model/link.model.js";
 import mongoose from "mongoose";
+import User from "../model/user.model.js";
+
+//new line below two
+import { cancelReminder } from '../services/reminder.service.js';
+import { createCalendarEvent, deleteCalendarEvent } from '../services/calendar.service.js';
+import { refreshGoogleToken } from './user.controller.js';
 
 export const fetchGrpFromDB = async (req, res) => {
      const userId = req.user._id;
@@ -47,7 +53,7 @@ export const addLinkToDB = async (req, res) => {
                });
           }
 
-          const oldLink = await Link.findOne({ title });
+          const oldLink = await Link.findOne({ userId, title });
 
           if (oldLink) {
                return res.status(400).json({
@@ -88,6 +94,34 @@ export const addLinkToDB = async (req, res) => {
 
           await link.save();
 
+          //! new part
+          // Schedule reminder if reminderDate is set
+          if (reminderDate) {
+               // Schedule email and push notifications, which includes calendar event creation
+               // await scheduleReminder(link._id, userId);
+
+               // Check if the reminder service indicated a token refresh is needed
+               // The needsTokenRefresh logic is now primarily handled within scheduleReminder's flow
+               // and propagated through the addLink response.
+               const user = await User.findById(userId);
+               if (user?.googleId && !user.googleAccessToken) { // Simplified check for needing a refresh
+                    return res.status(200).json({
+                         success: true,
+                         _id: link._id,
+                         userId: link.userId,
+                         title: link.title,
+                         url: link.url,
+                         description: link.description,
+                         group: link.group,
+                         reminderDate: link.reminderDate,
+                         reminderNote: link.reminderNote,
+                         calendarEventId: link.calendarEventId, // This will be null initially if refresh needed
+                         createdAt: link.createdAt,
+                         needsTokenRefresh: true
+                    });
+               }
+          }
+
           return res.status(201).json({
                success: true,
                _id: link._id,
@@ -98,6 +132,7 @@ export const addLinkToDB = async (req, res) => {
                group: link.group,
                reminderDate: link.reminderDate,
                reminderNote: link.reminderNote,
+               calendarEventId: link.calendarEventId,
                createdAt: link.createdAt
           });
      } catch (error) {
@@ -117,7 +152,7 @@ export const fetchLinksFromDB = async (req, res) => {
                .select('-userId') // 👈 This excludes the 'userId' field
                .exec();
 
-          console.log("FILTERED LINK", links);
+          // console.log("FILTERED LINK", links);
 
           return res.status(200).json(links);
      } catch (error) {
@@ -242,3 +277,131 @@ export const deleteGroupFromDB = async (req, res) => {
 //           });
 //      }
 // };
+
+// Add a new function to handle reminder updates
+export const updateReminder = async (req, res) => {
+     const userId = req.user._id;
+     const { linkId } = req.params;
+     const { reminderDate, reminderNote } = req.body;
+
+     try {
+          const link = await Link.findOne({ _id: linkId, userId });
+          if (!link) {
+               return res.status(404).json({
+                    success: false,
+                    message: "Link not found"
+               });
+          }
+
+          // Cancel existing reminder
+          cancelReminder(linkId);
+
+          // Delete existing calendar event if any
+          if (link.calendarEventId) {
+               await deleteCalendarEvent(userId, link.calendarEventId);
+               link.calendarEventId = null;
+          }
+
+          // Update reminder details
+          link.reminderDate = reminderDate;
+          link.reminderNote = reminderNote;
+
+          // Schedule new reminder if date is set
+          if (reminderDate) {
+               await scheduleReminder(link._id, userId);
+
+               // Create new calendar event
+               const calendarEvent = await createCalendarEvent(userId, link);
+               if (calendarEvent) {
+                    link.calendarEventId = calendarEvent.id;
+               } else {
+                    // If calendar event creation fails, it might be due to expired token
+                    const user = await User.findById(userId);
+                    if (user?.googleId) {
+                         return res.status(200).json({
+                              success: true,
+                              link,
+                              needsTokenRefresh: true
+                         });
+                    }
+               }
+          }
+
+          await link.save();
+
+          return res.status(200).json({
+               success: true,
+               link
+          });
+     } catch (error) {
+          console.error("Error updating reminder:", error);
+          return res.status(500).json({
+               success: false,
+               message: "Failed to update reminder"
+          });
+     }
+};
+
+export const syncCalendarEventInDB = async (req, res) => {
+     const userId = req.user._id;
+     const { linkId } = req.params;
+
+     try {
+          const link = await Link.findOne({ _id: linkId, userId });
+          if (!link) {
+               return res.status(404).json({
+                    success: false,
+                    message: "Link not found"
+               });
+          }
+
+          if (!link.reminderDate) {
+               return res.status(400).json({
+                    success: false,
+                    message: "Link does not have a reminder date"
+               });
+          }
+
+          if (link.calendarEventId) {
+               return res.status(200).json({
+                    success: true,
+                    message: "Calendar event already exists for this link",
+                    link
+               });
+          }
+
+          const calendarEvent = await createCalendarEvent(userId, link);
+
+          if (calendarEvent) {
+               link.calendarEventId = calendarEvent.id;
+               await link.save();
+               // console.log("Server response link after calendar sync:", link);
+               return res.status(200).json({
+                    success: true,
+                    message: "Calendar event synced successfully",
+                    link
+               });
+          } else {
+               const user = await User.findById(userId);
+               if (user?.googleId) {
+                    return res.status(200).json({
+                         success: false,
+                         message: "Failed to sync calendar event, Google token might need refresh",
+                         needsTokenRefresh: true,
+                         link
+                    });
+               } else {
+                    return res.status(500).json({
+                         success: false,
+                         message: "Failed to sync calendar event"
+                    });
+               }
+          }
+     } catch (error) {
+          console.error("Error syncing calendar event:", error);
+          return res.status(500).json({
+               success: false,
+               message: "Failed to sync calendar event"
+          });
+     }
+};
