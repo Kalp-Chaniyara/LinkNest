@@ -2,14 +2,14 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import toast from "react-hot-toast"
 
-const API_URL = "http://localhost:3000/api/auth";
+// const import.meta.env.VITE_REACT_APP_BACKEND_BASEURL = "http://localhost:3000/api/auth";
 
 // Async thunks
 export const signup = createAsyncThunk(
      "user/signup",
      async ({ fullName, email, password }, { rejectWithValue }) => {
           try {
-               const response = await axios.post(`${API_URL}/signup`, {
+               const response = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/signup`, {
                     fullName,
                     email,
                     password,
@@ -28,7 +28,7 @@ export const verifyEmail = createAsyncThunk(
      "user/verifyEmail",
      async ({ userId, otp }, { rejectWithValue }) => {
           try {
-               const response = await axios.post(`${API_URL}/verify-email`, {
+               const response = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/verify-email`, {
                     userId,
                     otp,
                },
@@ -45,7 +45,7 @@ export const resendOTP = createAsyncThunk(
      "user/resendOTP",
      async (userId, { rejectWithValue }) => {
           try {
-               const response = await axios.post(`${API_URL}/resend-otp`, {
+               const response = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/resend-otp`, {
                     userId,
                },
                { withCredentials: true }
@@ -62,7 +62,7 @@ export const login = createAsyncThunk(
      async ({ email, password }, { rejectWithValue }) => {
           try {
                const response = await axios.post(
-                    `${API_URL}/login`,
+                    `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/login`,
                     {
                          email,
                          password,
@@ -81,7 +81,7 @@ export const logout = createAsyncThunk(
      async (_, { rejectWithValue }) => {
           try {
                const response = await axios.post(
-                    `${API_URL}/logout`,
+                    `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/logout`,
                     {},
                     { withCredentials: true }
                );
@@ -97,7 +97,7 @@ export const checkAuth = createAsyncThunk(
      async (_, { rejectWithValue }) => {
           try {
                // console.log('Checking auth status...');
-               const response = await axios.get(`${API_URL}/check`, {
+               const response = await axios.get(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/check`, {
                     withCredentials: true,
                });
                // console.log('Auth check response:', response.data);

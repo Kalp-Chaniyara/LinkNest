@@ -61,10 +61,10 @@ router.get('/google/callback',
                });
 
                // Redirect to client with success
-               res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/dashboard`);
+               res.redirect(`${process.env.CLIENT_URL}/dashboard`);
           } catch (error) {
                console.error('Google callback error:', error);
-               res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/login?error=auth_failed`);
+               res.redirect(`${process.env.CLIENT_URL}/login?error=auth_failed`);
           }
      }
 );

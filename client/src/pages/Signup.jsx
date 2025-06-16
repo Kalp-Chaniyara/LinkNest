@@ -10,7 +10,7 @@ const Signup = () => {
   const isLogin = useSelector((state) => state.user.isLogin);
 
   const handleGoogleSignup = () => {
-    window.location.href = "http://localhost:3000/api/auth/google";
+    window.location.href = `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/google`;
   };
 
   useEffect(() => {
