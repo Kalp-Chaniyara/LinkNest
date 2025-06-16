@@ -15,14 +15,6 @@
 /server/dist
 
 # Environment files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.development
-.env.production
-.env.test
 client/.env
 server/.env
 
