@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Lock, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { checkAuth } from "../store/Slices/userSlice";
+// import { checkAuth } from "../store/Slices/userSlice";
 
 const ProtectedRoute = ({ children }) => {
   // const { isAuthenticated, isLoading } = useAuth();

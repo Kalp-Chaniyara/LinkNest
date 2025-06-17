@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import LinkManager from "@/components/LinkManager";
 import { Button } from "@/components/ui/button";
 import { LogOut, User } from "lucide-react";
-import { logout, checkAuth } from "../store/Slices/userSlice";
+import { logout } from "../store/Slices/userSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";

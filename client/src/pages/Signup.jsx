@@ -38,7 +38,7 @@ const Signup = () => {
           <div className="text-center space-y-4">
             <div className="flex justify-center">
               <img
-                src="../../public/Logo.png"
+                src="/Logo.png"
                 alt="Logo"
                 className="h-16 w-16 animate-float"
               />
