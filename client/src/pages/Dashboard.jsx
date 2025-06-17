@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import LinkManager from "@/components/LinkManager";
 import { Button } from "@/components/ui/button";
 import { LogOut, User } from "lucide-react";
-import { logout } from "../store/Slices/userSlice";
+import { checkAuth, logout } from "../store/Slices/userSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -15,12 +15,12 @@ const Dashboard = () => {
   const user = useSelector((state) => state.user.user);
   const isLoading = useSelector((state) => state.user.loading);
 
-  // useEffect(() => {
-  //   // Check authentication status only once when component mounts
-  //   if (!user) {
-  //     dispatch(checkAuth());
-  //   }
-  // }, []); // Empty dependency array means this runs once on mount
+  useEffect(() => {
+    // Check authentication status only once when component mounts
+    if (!user) {
+      dispatch(checkAuth());
+    }
+  }, []); // Empty dependency array means this runs once on mount
 
   useEffect(() => {
     // Redirect to login if not authenticated

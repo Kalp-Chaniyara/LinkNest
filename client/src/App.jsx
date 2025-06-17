@@ -10,22 +10,20 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
-// import { useDispatch, useSelector } from "react-redux";
-// import { checkAuth } from "./store/Slices/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { checkAuth } from "./store/Slices/userSlice";
+import { useEffect } from "react";
 // import { useEffect } from "react";
 // import EmailVerification from "./components/EmailVerification";
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
 
-  // const dispatch = useDispatch();
-  // const isLogin = useSelector((state) => state.auth.isLogin);
-  // const isLoading = useSelector((state) => state.auth.isLoading);
+  const dispatch = useDispatch();
 
-
-  // useEffect(() => {
-  //   dispatch(checkAuth());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch]);
 
   return (
     <Routes>

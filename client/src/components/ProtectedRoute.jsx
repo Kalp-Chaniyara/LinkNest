@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Lock, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-// import { checkAuth } from "../store/Slices/userSlice";
+import { checkAuth } from "../store/Slices/userSlice";
 
 const ProtectedRoute = ({ children }) => {
   // const { isAuthenticated, isLoading } = useAuth();
@@ -13,17 +13,21 @@ const ProtectedRoute = ({ children }) => {
   const dispatch = useDispatch();
   const { isLogin, loading, user } = useSelector((state) => state.user);
 
-  // useEffect(() => {
-  //   // console.log('ProtectedRoute mounted, checking auth...');
-  //   dispatch(checkAuth())
-  //     .unwrap()
-  //     .then(() => {
-  //       // console.log('Auth check successful');
-  //     })
-  //     .catch((error) => {
-  //       // console.error('Auth check failed:', error);
-  //     });
-  // }, [dispatch]);
+  // useEffect(()=>{
+  //   console.log("Is login and is loading ", isLogin," ",loading, user)
+  // })
+
+  useEffect(() => {
+    // console.log('ProtectedRoute mounted, checking auth...');
+    dispatch(checkAuth())
+      .unwrap()
+      .then(() => {
+        // console.log('Auth check successful');
+      })
+      .catch((error) => {
+        // console.error('Auth check failed:', error);
+      });
+  }, [dispatch]);
 
   // console.log('Current auth state:', { isLogin, loading, user });
 

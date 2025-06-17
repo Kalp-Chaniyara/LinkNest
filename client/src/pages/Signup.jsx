@@ -65,19 +65,6 @@ const Signup = () => {
               <span className="font-medium">Continue with Google</span>
             </button>
           </div>
-
-          {/* Login Link */}
-          <div className="text-center">
-            <p className="text-sm text-slate-600">
-              Already have an account?{" "}
-              <Link
-                to="/login"
-                className="font-medium text-linkify-600 hover:text-linkify-500"
-              >
-                Sign in
-              </Link>
-            </p>
-          </div>
         </div>
       </div>
     </div>

@@ -92,22 +92,22 @@ export const logout = createAsyncThunk(
      }
 );
 
-// export const checkAuth = createAsyncThunk(
-//      "user/checkAuth",
-//      async (_, { rejectWithValue }) => {
-//           try {
-//                // console.log('Checking auth status...');
-//                const response = await axios.get(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/check`, {
-//                     withCredentials: true,
-//                });
-//                // console.log('Auth check response:', response.data);
-//                return response.data;
-//           } catch (error) {
-//                // console.error('Auth check error:', error);
-//                return rejectWithValue(error.response?.data || { message: 'Authentication failed' });
-//           }
-//      }
-// );
+export const checkAuth = createAsyncThunk(
+     "user/checkAuth",
+     async (_, { rejectWithValue }) => {
+          try {
+               // console.log('Checking auth status...');
+               const response = await axios.get(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/check`, {
+                    withCredentials: true,
+               });
+               // console.log('Auth check response:', response.data);
+               return response.data;
+          } catch (error) {
+               // console.error('Auth check error:', error);
+               return rejectWithValue(error.response?.data || { message: 'Authentication failed' });
+          }
+     }
+);
 
 const initialState = {
      user: null,
@@ -215,25 +215,25 @@ const userSlice = createSlice({
                     };
                })
                // Check Auth
-               // .addCase(checkAuth.pending, (state) => {
-               //      // console.log('Auth check pending');
-               //      state.loading = true;
-               //      state.error = null;
-               // })
-               // .addCase(checkAuth.fulfilled, (state, action) => {
-               //      // console.log('Auth check fulfilled:', action.payload);
-               //      state.loading = false;
-               //      state.user = action.payload.data;
-               //      state.isLogin = true;
-               //      state.error = null;
-               // })
-               // .addCase(checkAuth.rejected, (state, action) => {
-               //      // console.log('Auth check rejected:', action.payload);
-               //      state.loading = false;
-               //      state.user = null;
-               //      state.isLogin = false;
-               //      state.error = action.payload;
-               // });
+               .addCase(checkAuth.pending, (state) => {
+                    // console.log('Auth check pending');
+                    state.loading = true;
+                    state.error = null;
+               })
+               .addCase(checkAuth.fulfilled, (state, action) => {
+                    // console.log('Auth check fulfilled:', action.payload);
+                    state.loading = false;
+                    state.user = action.payload.data;
+                    state.isLogin = true;
+                    state.error = null;
+               })
+               .addCase(checkAuth.rejected, (state, action) => {
+                    // console.log('Auth check rejected:', action.payload);
+                    state.loading = false;
+                    state.user = null;
+                    state.isLogin = false;
+                    state.error = action.payload;
+               });
      },
 });
 
