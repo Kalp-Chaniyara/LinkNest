@@ -36,6 +36,7 @@ export const scheduleReminder = async (linkId, userId) => {
           // Cancel any existing reminder for this link
           cancelReminder(linkId);
 
+          // Convert UTC time to local time for scheduling
           const reminderTime = new Date(link.reminderDate);
           const now = new Date();
 
@@ -58,17 +59,17 @@ export const scheduleReminder = async (linkId, userId) => {
 
           // Create calendar event if user has Google Calendar access
           if (user.googleAccessToken) {
-               // console.log('Attempting to create calendar event for link:', linkId);
+               console.log('Attempting to create calendar event for link:', linkId);
                const calendarEvent = await createCalendarEvent(userId, link);
                if (calendarEvent) {
-                    // console.log('Calendar event created successfully:', calendarEvent.id);
+                    console.log('Calendar event created successfully:', calendarEvent.id);
                     link.calendarEventId = calendarEvent.id;
                     await link.save();
                } else {
-                    // console.log('Failed to create calendar event for link:', linkId);
+                    console.log('Failed to create calendar event for link:', linkId);
                }
           } else {
-               // console.log('No Google access token found for user:', userId);
+               console.log('No Google access token found for user:', userId);
           }
      } catch (error) {
           console.error('Error scheduling reminder:', error);

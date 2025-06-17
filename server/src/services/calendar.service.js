@@ -58,7 +58,7 @@ export const createCalendarEvent = async (userId, link) => {
           // Verify token scopes
           try {
                const tokenInfo = await oauth2Client.getTokenInfo(user.googleAccessToken);
-               // console.log('Token scopes:', tokenInfo.scopes);
+               console.log('Token scopes:', tokenInfo.scopes);
                if (!tokenInfo.scopes.includes('https://www.googleapis.com/auth/calendar')) {
                     // console.log('Token missing required calendar scope');
                     return null;
@@ -75,11 +75,11 @@ export const createCalendarEvent = async (userId, link) => {
                description: `${link.reminderNote || 'Reminder'}\n\nLink: ${link.url}`,
                start: {
                     dateTime: new Date(link.reminderDate).toISOString(),
-                    timeZone: 'UTC',
+                    timeZone: 'Asia/Kolkata',
                },
                end: {
                     dateTime: new Date(new Date(link.reminderDate).getTime() + 30 * 60000).toISOString(), // 30 minutes duration
-                    timeZone: 'UTC',
+                    timeZone: 'Asia/Kolkata',
                },
                reminders: {
                     useDefault: false,
@@ -90,7 +90,7 @@ export const createCalendarEvent = async (userId, link) => {
                },
           };
 
-          // console.log('Attempting to create calendar event:', event);
+          console.log('Attempting to create calendar event:', event);
 
           const response = await calendar.events.insert({
                auth: oauth2Client,
@@ -98,7 +98,7 @@ export const createCalendarEvent = async (userId, link) => {
                requestBody: event,
           });
 
-          // console.log('Calendar event created successfully:', response.data);
+          console.log('Calendar event created successfully:', response.data);
           return response.data;
      } catch (error) {
           console.error('Error creating calendar event:', error);

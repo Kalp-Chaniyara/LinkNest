@@ -34,6 +34,15 @@ const AddLinkForm = ({ onAddLink, onCreateGroup, groups = [], onGoogleSyncNeeded
     e.preventDefault();
     if (!formData.title || !formData.url) return;
 
+    let reminderDateUTC = null;
+    if (formData.reminderDate) {
+      // Parse the local datetime-local string (e.g., "2025-06-17T16:15")
+      // new Date() will create a Date object in the browser's local timezone.
+      const localDate = new Date(formData.reminderDate);
+      // .toISOString() converts this local date to its UTC equivalent ISO string (e.g., "2025-06-17T10:45:00.000Z" for IST)
+      reminderDateUTC = localDate.toISOString();
+    }
+
     let selectedGrp = null;
     let isNewGrp = false;
 
@@ -51,13 +60,20 @@ const AddLinkForm = ({ onAddLink, onCreateGroup, groups = [], onGoogleSyncNeeded
       selectedGrp = groups.find((g) => g.name === formData.group)
     }
 
+    // const linkData = {
+    //   // userId:isUser,
+    //   title: formData.title,
+    //   url: formData.url,
+    //   description: formData.description,
+    //   group: selectedGrp || null,
+    //   reminderDate: formData.reminderDate || null,
+    //   reminderNote: formData.reminderNote || "",
+    // };
+
     const linkData = {
-      // userId:isUser,
-      title: formData.title,
-      url: formData.url,
-      description: formData.description,
+      ...formData,
+      reminderDate: reminderDateUTC, // Send UTC ISO string to server
       group: selectedGrp || null,
-      reminderDate: formData.reminderDate || null,
       reminderNote: formData.reminderNote || "",
     };
 

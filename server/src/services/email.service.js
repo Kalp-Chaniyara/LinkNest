@@ -21,17 +21,17 @@ transporter.verify(function(error, success) {
     if (error) {
         console.error('SMTP configuration error:', error);
     } else {
-        // console.log('SMTP server is ready to take our messages');
+        console.log('SMTP server is ready to take our messages');
     }
 });
 
 export const sendOTPEmail = async (email, otp) => {
     try {
-        // console.log('Attempting to send email with config:', {
-        //     from: process.env.EMAIL_USER,
-        //     to: email,
-        //     hasPassword: !!process.env.EMAIL_PASS
-        // });
+        console.log('Attempting to send email with config:', {
+            from: process.env.EMAIL_USER,
+            to: email,
+            hasPassword: !!process.env.EMAIL_PASS
+        });
 
         if (!`${process.env.EMAIL_USER}` || !`${process.env.EMAIL_PASS}`) {
             throw new Error('Email configuration is missing. Please check your environment variables.');
@@ -59,18 +59,18 @@ export const sendOTPEmail = async (email, otp) => {
             `
         };
 
-        // console.log('Sending email:', {
-        //     from: mailOptions.from,
-        //     to: mailOptions.to,
-        //     subject: mailOptions.subject
-        // });
+        console.log('Sending email:', {
+            from: mailOptions.from,
+            to: mailOptions.to,
+            subject: mailOptions.subject
+        });
 
         const info = await transporter.sendMail(mailOptions);
-        // console.log('Email sent successfully:', {
-        //     messageId: info.messageId,
-        //     to: info.envelope.to,
-        //     from: info.envelope.from
-        // });
+        console.log('Email sent successfully:', {
+            messageId: info.messageId,
+            to: info.envelope.to,
+            from: info.envelope.from
+        });
         return true;
     } catch (error) {
         console.error('Detailed error sending OTP email:', {
@@ -115,10 +115,10 @@ export const sendReminderEmail = async (email, link) => {
         };
 
         const info = await transporter.sendMail(mailOptions);
-        // console.log('Reminder email sent successfully:', {
-        //     messageId: info.messageId,
-        //     to: info.envelope.to
-        // });
+        console.log('Reminder email sent successfully:', {
+            messageId: info.messageId,
+            to: info.envelope.to
+        });
         return true;
     } catch (error) {
         console.error('Error sending reminder email:', error);

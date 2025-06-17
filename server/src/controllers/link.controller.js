@@ -37,6 +37,8 @@ export const addLinkToDB = async (req, res) => {
      const userId = req.user._id;
      const { title, url, description, group, reminderDate, reminderNote, isNewGrp } = req.body;
 
+     console.log("Server received reminderDate in addLinkToDB:", reminderDate);
+
      try {
           if (!userId) {
                return res.status(400).json({
