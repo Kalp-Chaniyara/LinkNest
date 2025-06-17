@@ -31,7 +31,7 @@ const corsConfig = {
 
 // Session configuration
 app.use(session({
-     secret: process.env.SESSION_SECRET,
+     secret: `${process.env.SESSION_SECRET}`,
      resave: false,
      saveUninitialized: false,
      cookie: {
@@ -64,6 +64,10 @@ initializeReminders().catch(error => {
 app.listen(process.env.PORT, () => {
      console.log(`Server is running on port ${process.env.PORT}`);
 });
+
+
+// console.log("Id in index.js",process.env.GOOGLE_CLIENT_ID);
+
 
 app.get("/",(_,res)=>{
      res.send("Hello World!");

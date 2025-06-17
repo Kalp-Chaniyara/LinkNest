@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 export const OTP_CONFIG = {
     length: 6,        // Length of the OTP
     step: 30,         // Time step in seconds
@@ -5,10 +8,13 @@ export const OTP_CONFIG = {
     issuer: 'Linkable' // Name of the service
 };
 
+// console.log("Client ID", `${process.env.GOOGLE_CLIENT_ID}`);
+
+
 export const GOOGLE_CONFIG = {
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALLBACK_URL,
+    clientID: `${process.env.GOOGLE_CLIENT_ID}`,
+    clientSecret: `${process.env.GOOGLE_CLIENT_SECRET}`,
+    callbackURL: `${process.env.GOOGLE_CALLBACK_URL}`,
     scope: [
         'profile', 
         'email', 

@@ -2,8 +2,6 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { GOOGLE_CONFIG } from './auth.config.js';
 import User from '../model/user.model.js';
-import { generateOTP } from '../utils/otp.js';
-import { sendOTPEmail } from '../services/email.service.js';
 
 passport.serializeUser((user, done) => {
      done(null, user.id);

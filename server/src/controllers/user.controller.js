@@ -1,11 +1,4 @@
-import generateAccesstoken from "../lib/token.js";
 import User from "../model/user.model.js";
-import bcrypt from "bcryptjs"; // No longer needed for local auth
-import jwt from "jsonwebtoken"; // No longer needed for local auth
-import { generateOTP, verifyOTP } from '../utils/otp.js'; // No longer needed for local auth
-import { sendOTPEmail } from '../services/email.service.js'; // No longer needed for OTP
-import OTP from '../model/otp.model.js'; // No longer needed for OTP
-import crypto from 'crypto'; // No longer needed for password reset
 import { GOOGLE_CONFIG } from '../config/auth.config.js';
 
 // export const signup = async (req, res) => {
