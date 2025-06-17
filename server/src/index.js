@@ -28,25 +28,29 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 const corsConfig = {
-     origin:`${process.env.CLIENT_URL}`,
-     credentials:true,
- }
- app.use(cors(corsConfig))
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['set-cookie']
+};
+app.use(cors(corsConfig));
 
 // Session configuration
 app.use(session({
-     secret: `${process.env.SESSION_SECRET}`,
+     secret: process.env.SESSION_SECRET,
      resave: false,
      saveUninitialized: false,
      store: MongoStore.create({
-          mongoUrl: process.env.MONGODB_URI,
-          collectionName: 'sessions',
+         mongoUrl: process.env.MONGODB_URI,
+         collectionName: 'sessions',
      }),
      cookie: {
-          httpOnly: true,
-          maxAge: 24 * 60 * 60 * 1000, // 24 hours
-          sameSite: 'lax', // allow sending cookies from frontend on same-site requests
-          secure: process.env.NODE_ENV === 'production'
+         httpOnly: true,
+         secure: process.env.NODE_ENV === 'production',
+         sameSite: 'none', // Change from 'lax' to 'none'
+         domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined,
+         maxAge: 24 * 60 * 60 * 1000 // 24 hours
      }
 }));
 
