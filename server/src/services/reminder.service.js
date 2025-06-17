@@ -19,107 +19,117 @@ const transporter = nodemailer.createTransport({
 // Store active reminders
 const activeReminders = new Map();
 
+// Function to check and send overdue reminders
+const checkAndSendOverdueReminders = async () => {
+    try {
+        const now = new Date();
+        const overdueLinks = await Link.find({
+            reminderDate: { $lte: now },
+            lastNotified: { $exists: false }
+        });
+
+        for (const link of overdueLinks) {
+            const user = await User.findById(link.userId);
+            if (user) {
+                await sendReminder(link, user);
+            }
+        }
+    } catch (error) {
+        console.error('Error checking overdue reminders:', error);
+    }
+};
+
 export const scheduleReminder = async (linkId, userId) => {
-     try {
-          const link = await Link.findById(linkId);
-          if (!link || !link.reminderDate) {
-               // console.log('No link or reminder date found for linkId:', linkId);
-               return;
-          }
+    try {
+        const link = await Link.findById(linkId);
+        if (!link || !link.reminderDate) {
+            return;
+        }
 
-          const user = await User.findById(userId);
-          // console.log("USer in schedule 10", user);
-          if (!user) {
-               // console.log('No user found for userId:', userId);
-               return;
-          }
+        const user = await User.findById(userId);
+        if (!user) {
+            return;
+        }
 
-          // Cancel any existing reminder for this link
-          cancelReminder(linkId);
+        // Cancel any existing reminder for this link
+        cancelReminder(linkId);
 
-          // Convert UTC time to local time for scheduling
-          const reminderTime = new Date(link.reminderDate);
-          const now = new Date();
+        // Convert UTC time to local time for scheduling
+        const reminderTime = new Date(link.reminderDate);
+        const now = new Date();
 
-          // If reminder time is in the past, don't schedule
-          if (reminderTime <= now) {
-               // console.log('Reminder time is in the past for linkId:', linkId);
-               return;
-          }
+        // If reminder time is in the past, don't schedule
+        if (reminderTime <= now) {
+            return;
+        }
 
-          // Calculate time until reminder
-          const timeUntilReminder = reminderTime.getTime() - now.getTime();
+        // Calculate time until reminder
+        const timeUntilReminder = reminderTime.getTime() - now.getTime();
 
-          // Schedule the reminder
-          // console.log("Reminder schedul work start");
-          const reminderTimeout = setTimeout(async () => {
-               // console.log("calling sendu");
-               await sendReminder(link, user);
-               // console.log("finish sendu");
-          }, timeUntilReminder);
-          // console.log("Reminder schedul work end");
+        // Schedule the reminder
+        const reminderTimeout = setTimeout(async () => {
+            try {
+                // Double check if reminder was already sent
+                const currentLink = await Link.findById(linkId);
+                if (currentLink && !currentLink.lastNotified) {
+                    await sendReminder(currentLink, user);
+                }
+            } catch (error) {
+                console.error('Error in reminder timeout:', error);
+            }
+        }, timeUntilReminder);
 
-          // Store the timeout ID
-          activeReminders.set(linkId, reminderTimeout);
+        // Store the timeout ID
+        activeReminders.set(linkId, reminderTimeout);
 
-          // Create calendar event if user has Google Calendar access
-          if (user.googleAccessToken) {
-               // console.log('Attempting to create calendar event for link:', linkId);
-               const calendarEvent = await createCalendarEvent(userId, link);
-               if (calendarEvent) {
-                    // console.log('Calendar event created successfully:', calendarEvent.id);
-                    link.calendarEventId = calendarEvent.id;
-                    await link.save();
-               } else {
-                    console.log('Failed to create calendar event for link:', linkId);
-               }
-          } else {
-               console.log('No Google access token found for user:', userId);
-          }
-     } catch (error) {
-          console.error('Error scheduling reminder:', error);
-     }
+        // Create calendar event if user has Google Calendar access
+        if (user.googleAccessToken) {
+            const calendarEvent = await createCalendarEvent(userId, link);
+            if (calendarEvent) {
+                link.calendarEventId = calendarEvent.id;
+                await link.save();
+            }
+        }
+    } catch (error) {
+        console.error('Error scheduling reminder:', error);
+    }
 };
 
 export const cancelReminder = (linkId) => {
-     const timeoutId = activeReminders.get(linkId);
-     if (timeoutId) {
-          clearTimeout(timeoutId);
-          activeReminders.delete(linkId);
-     }
+    const timeoutId = activeReminders.get(linkId);
+    if (timeoutId) {
+        clearTimeout(timeoutId);
+        activeReminders.delete(linkId);
+    }
 };
 
 const sendReminder = async (link, user) => {
-     try {
-          // Send email notification using the email service
-          // console.log("Calling sendreminider");
-          await sendReminderEmail(user.email, link);
-          // console.log("Finish sendreminider");
+    try {
+        // Send email notification
+        await sendReminderEmail(user.email, link);
 
-          // Update lastNotified timestamp
-          link.lastNotified = new Date();
-          await link.save();
+        // Update lastNotified timestamp
+        link.lastNotified = new Date();
+        await link.save();
 
-          // Send push notification if user has subscriptions
-          // if (user.pushSubscriptions && user.pushSubscriptions.length > 0) {
-          //      for (const subscription of user.pushSubscriptions) {
-          //           await sendPushNotification(subscription, { title: `Reminder: ${link.title}`, body: link.reminderNote || 'Time to check this link!' });
-          //      }
-          // }
+        // Send push notification if user has subscriptions
+        // if (user.pushSubscriptions && user.pushSubscriptions.length > 0) {
+        //      for (const subscription of user.pushSubscriptions) {
+        //           await sendPushNotification(subscription, { title: `Reminder: ${link.title}`, body: link.reminderNote || 'Time to check this link!' });
+        //      }
+        // }
 
-     } catch (error) {
-          console.error('Error sending reminder:', error);
-     }
+    } catch (error) {
+        console.error('Error sending reminder:', error);
+    }
 };
-
-// Function to initialize reminders for all active links
-
 
 export const initializeReminders = async () => {
     try {
         const now = new Date();
         const links = await Link.find({
-            reminderDate: { $gt: now }
+            reminderDate: { $gt: now },
+            lastNotified: { $exists: false }
         });
 
         for (const link of links) {

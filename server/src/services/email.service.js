@@ -2,24 +2,43 @@ import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 dotenv.config();
 
+// Debug logging
+console.log('Email Configuration:', {
+    host: 'smtp.gmail.com',
+    port: process.env.NODE_ENV === 'production' ? 465 : process.env.EMAIL_PORT,
+    hasUser: !!process.env.EMAIL_USER,
+    hasPass: !!process.env.EMAIL_PASS,
+    secure: process.env.NODE_ENV === 'production'
+});
+
 // Create a transporter using Gmail SMTP
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: process.env.EMAIL_PORT,
-    secure: process.env.NODE_ENV === 'production',
+    port: process.env.NODE_ENV === 'production' ? 465 : parseInt(process.env.EMAIL_PORT) || 465,
+    secure: process.env.NODE_ENV === 'production', // true for port 465
     auth: {
-        user: `${process.env.EMAIL_USER}`,
-        pass: `${process.env.EMAIL_PASS}`
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     },
     tls: {
-        rejectUnauthorized: false
-    }
+        rejectUnauthorized: true
+    },
+    pool: true, // Use pooled connections
+    maxConnections: 5,
+    maxMessages: 100,
+    rateDelta: 1000, // How many messages to send per second
+    rateLimit: 5 // Max number of messages per rateDelta
 });
 
-// Verify transporter configuration
+// Verify transporter configuration with detailed error logging
 transporter.verify(function(error, success) {
     if (error) {
-        console.error('SMTP configuration error:', error);
+        console.error('SMTP configuration error:', {
+            message: error.message,
+            code: error.code,
+            command: error.command,
+            stack: error.stack
+        });
     } else {
         console.log('SMTP server is ready to take our messages');
     }
