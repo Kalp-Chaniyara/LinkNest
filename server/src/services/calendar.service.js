@@ -1,6 +1,7 @@
 // env file jovi
 
 import { google } from 'googleapis';
+import { OAuth2Client } from 'google-auth-library';
 import User from '../model/user.model.js';
 import { GOOGLE_CONFIG } from '../config/auth.config.js';
 
@@ -26,6 +27,19 @@ const oauth2Client = new google.auth.OAuth2(
 // })
 
 // router.get('/google/callb')
+
+// Helper function to format date to IST ISO 8601 string with offset
+function formatToISTISO(date) {
+     const year = date.getFullYear();
+     const month = (date.getMonth() + 1).toString().padStart(2, '0');
+     const day = date.getDate().toString().padStart(2, '0');
+     const hours = date.getHours().toString().padStart(2, '0');
+     const minutes = date.getMinutes().toString().padStart(2, '0');
+     const seconds = date.getSeconds().toString().padStart(2, '0');
+     
+     // Manually construct the ISO string with IST offset (+05:30)
+     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}+05:30`;
+}
 
 // Create calendar event
 export const createCalendarEvent = async (userId, link) => {
@@ -58,7 +72,7 @@ export const createCalendarEvent = async (userId, link) => {
           // Verify token scopes
           try {
                const tokenInfo = await oauth2Client.getTokenInfo(user.googleAccessToken);
-               console.log('Token scopes:', tokenInfo.scopes);
+               // console.log('Token scopes:', tokenInfo.scopes);
                if (!tokenInfo.scopes.includes('https://www.googleapis.com/auth/calendar')) {
                     // console.log('Token missing required calendar scope');
                     return null;
@@ -71,26 +85,34 @@ export const createCalendarEvent = async (userId, link) => {
           const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
           const event = {
-               summary: `Reminder: ${link.title}`,
-               description: `${link.reminderNote || 'Reminder'}\n\nLink: ${link.url}`,
+               
+               summary: 'summary it is',
+               // description: `${link.reminderNote || 'Reminder'}\n\nLink: ${link.url}`,
+               description: "This is des",
                start: {
-                    dateTime: new Date(link.reminderDate).toISOString(),
+                    dateTime: formatToISTISO(link.reminderDate),
                     timeZone: 'Asia/Kolkata',
                },
                end: {
-                    dateTime: new Date(new Date(link.reminderDate).getTime() + 30 * 60000).toISOString(), // 30 minutes duration
+                    dateTime: formatToISTISO(new Date(link.reminderDate.getTime() + 30 * 60000)), // 30 minutes duration
                     timeZone: 'Asia/Kolkata',
                },
+               // start: {
+               //      date: link.reminderDate.toISOString().split('T')[0], // just 'YYYY-MM-DD'
+               //  },
+               //  end: {
+               //      date: link.reminderDate.toISOString().split('T')[0], // same day
+               //  },
                reminders: {
                     useDefault: false,
                     overrides: [
-                         { method: 'email', minutes: 1 }, // 1 minute before
-                         { method: 'popup', minutes: 1 }, // 1 minute before
+                         { method: 'email', minutes: 0 }, // 0 minutes before (at the time of the event)
+                         { method: 'popup', minutes: 0 }, // 0 minutes before (at the time of the event)
                     ],
                },
           };
 
-          console.log('Attempting to create calendar event:', event);
+          // console.log('Attempting to create calendar event:', event);
 
           const response = await calendar.events.insert({
                auth: oauth2Client,
@@ -98,7 +120,7 @@ export const createCalendarEvent = async (userId, link) => {
                requestBody: event,
           });
 
-          console.log('Calendar event created successfully:', response.data);
+          // console.log('Calendar event created successfully:', response.data);
           return response.data;
      } catch (error) {
           console.error('Error creating calendar event:', error);

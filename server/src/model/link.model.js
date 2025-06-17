@@ -48,6 +48,10 @@ const linkSchema = new mongoose.Schema({
      createdAt: {
           type: Date,
           default: Date.now
+     },
+     lastNotified: {
+          type: Date,
+          default: null
      }
 }, {
      timestamps: true,

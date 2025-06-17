@@ -30,7 +30,7 @@ passport.use(new GoogleStrategy({
                // Update tokens for existing user
                user.googleAccessToken = accessToken;
                user.googleRefreshToken = refreshToken;
-               user.tokenExpiryDate = new Date(Date.now() + 3*60 * 1000); // 1 hour expiry
+               user.tokenExpiryDate = new Date(Date.now() + 60*60 * 1000); // 1 hour expiry
                // console.log("USER 1",user);
                await user.save();
                return done(null, user, { accessToken, refreshToken });
@@ -58,7 +58,7 @@ passport.use(new GoogleStrategy({
                googleId: profile.id,
                googleAccessToken: accessToken,
                googleRefreshToken: refreshToken,
-               tokenExpiryDate: new Date(Date.now() + 3*60 * 1000), // 1 hour expiry
+               tokenExpiryDate: new Date(Date.now() + 60*60 * 1000), // 1 hour expiry
                isEmailVerified: true, // Automatically verify email for Google sign-ups
                authMethod: 'google' // Set authentication method to google
           });

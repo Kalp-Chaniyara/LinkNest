@@ -56,7 +56,7 @@ router.get('/google/callback',
                res.cookie('tokenStorer', token, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'none', // Changed from 'none' to 'lax' for local development
+                    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Changed from 'none' to 'lax' for local development
                     maxAge: 24 * 60 * 60 * 1000, // 24 hours
                     path: '/'
                 });

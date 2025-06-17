@@ -3,7 +3,7 @@ import User from "../model/user.model.js";
 
 export const validateToken = async (req, res, next) => {
     try {
-        console.log("REQ COOKIES",req.cookies)
+        // console.log("REQ COOKIES",req.cookies)
         const token = req.cookies.tokenStorer;
         // console.log("Auth Middleware: Token received from cookie:", token);
 
@@ -18,9 +18,9 @@ export const validateToken = async (req, res, next) => {
         let decoded;
         try {
             decoded = jwt.verify(token, process.env.SESSION_SECRET);
-            console.log("Auth Middleware: Token decoded successfully:", decoded);
+            // console.log("Auth Middleware: Token decoded successfully:", decoded);
         } catch (jwtError) {
-            console.log("Auth Middleware: JWT verification failed:", jwtError.message);
+            // console.log("Auth Middleware: JWT verification failed:", jwtError.message);
             return res.status(401).json({
                 success: false,
                 message: "Invalid token or token expired"
@@ -28,7 +28,7 @@ export const validateToken = async (req, res, next) => {
         }
 
         if (!decoded || !decoded.userId) {
-            console.log("Auth Middleware: Decoded token is missing userId.");
+            // console.log("Auth Middleware: Decoded token is missing userId.");
             return res.status(401).json({
                 success: false,
                 message: "Invalid token payload"
@@ -37,17 +37,17 @@ export const validateToken = async (req, res, next) => {
 
         const user = await User.findById(decoded.userId);
 
-        console.log("User from decoded",user);
+        // console.log("User from decoded",user);
 
         if (!user) {
-            console.log("Auth Middleware: User not found from token ID:", decoded.userId);
+            // console.log("Auth Middleware: User not found from token ID:", decoded.userId);
             return res.status(401).json({
                 success: false,
                 message: "User not found"
             });
         }
 
-        console.log("Auth Middleware: Token validation successful for user:", user.email);
+        // console.log("Auth Middleware: Token validation successful for user:", user.email);
         req.user = {
             ...user._doc,
             id: decoded.userId,
@@ -57,7 +57,7 @@ export const validateToken = async (req, res, next) => {
         req.user = user;
         next();
     } catch (error) {
-        console.log("Auth Middleware: General error in validateToken middleware: ", error.message);
+        // console.log("Auth Middleware: General error in validateToken middleware: ", error.message);
         res.status(401).json({
             success: false,
             message: "Authentication failed"

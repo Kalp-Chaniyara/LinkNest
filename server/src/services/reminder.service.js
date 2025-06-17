@@ -4,6 +4,7 @@ import nodemailer from 'nodemailer';
 import Link from '../model/link.model.js';
 import User from '../model/user.model.js';
 import { createCalendarEvent } from './calendar.service.js';
+import { sendReminderEmail } from './email.service.js';
 // import { sendPushNotification } from './push.service.js';
 
 // Create a transporter for sending emails
@@ -50,19 +51,23 @@ export const scheduleReminder = async (linkId, userId) => {
           const timeUntilReminder = reminderTime.getTime() - now.getTime();
 
           // Schedule the reminder
+          // console.log("Reminder schedul work start");
           const reminderTimeout = setTimeout(async () => {
+               // console.log("calling sendu");
                await sendReminder(link, user);
+               // console.log("finish sendu");
           }, timeUntilReminder);
+          // console.log("Reminder schedul work end");
 
           // Store the timeout ID
           activeReminders.set(linkId, reminderTimeout);
 
           // Create calendar event if user has Google Calendar access
           if (user.googleAccessToken) {
-               console.log('Attempting to create calendar event for link:', linkId);
+               // console.log('Attempting to create calendar event for link:', linkId);
                const calendarEvent = await createCalendarEvent(userId, link);
                if (calendarEvent) {
-                    console.log('Calendar event created successfully:', calendarEvent.id);
+                    // console.log('Calendar event created successfully:', calendarEvent.id);
                     link.calendarEventId = calendarEvent.id;
                     await link.save();
                } else {
@@ -86,26 +91,21 @@ export const cancelReminder = (linkId) => {
 
 const sendReminder = async (link, user) => {
      try {
-          // Send email notification
-          const mailOptions = {
-               from: process.env.EMAIL_USER,
-               to: user.email,
-               subject: `Reminder: ${link.title}`,
-               html: `
-                    <h2>Reminder: ${link.title}</h2>
-                    <p>${link.reminderNote || 'Time to check this link!'}</p>
-                    <p><a href="${link.url}">Click here to view the link</a></p>
-               `
-          };
+          // Send email notification using the email service
+          // console.log("Calling sendreminider");
+          await sendReminderEmail(user.email, link);
+          // console.log("Finish sendreminider");
 
-          await transporter.sendMail(mailOptions);
+          // Update lastNotified timestamp
+          link.lastNotified = new Date();
+          await link.save();
 
           // Send push notification if user has subscriptions
-          if (user.pushSubscriptions && user.pushSubscriptions.length > 0) {
-               for (const subscription of user.pushSubscriptions) {
-                    await sendPushNotification(subscription, { title: `Reminder: ${link.title}`, body: link.reminderNote || 'Time to check this link!' });
-               }
-          }
+          // if (user.pushSubscriptions && user.pushSubscriptions.length > 0) {
+          //      for (const subscription of user.pushSubscriptions) {
+          //           await sendPushNotification(subscription, { title: `Reminder: ${link.title}`, body: link.reminderNote || 'Time to check this link!' });
+          //      }
+          // }
 
      } catch (error) {
           console.error('Error sending reminder:', error);

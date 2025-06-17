@@ -101,7 +101,7 @@ export const checkAuth = createAsyncThunk(
                          withCredentials: true
                     }
                );
-               console.log("This is response from check",response)
+               // console.log("This is response from check",response)
                // console.log('Auth check response:', response.data);
                return response.data;
           } catch (error) {

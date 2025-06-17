@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import User from "../model/user.model.js";
 
 //new line below two
-import { cancelReminder } from '../services/reminder.service.js';
+import { cancelReminder, scheduleReminder } from '../services/reminder.service.js';
 import { createCalendarEvent, deleteCalendarEvent } from '../services/calendar.service.js';
 
 export const fetchGrpFromDB = async (req, res) => {
@@ -37,7 +37,7 @@ export const addLinkToDB = async (req, res) => {
      const userId = req.user._id;
      const { title, url, description, group, reminderDate, reminderNote, isNewGrp } = req.body;
 
-     console.log("Server received reminderDate in addLinkToDB:", reminderDate);
+     // console.log("Server received reminderDate in addLinkToDB:", reminderDate);
 
      try {
           if (!userId) {
@@ -99,7 +99,7 @@ export const addLinkToDB = async (req, res) => {
           // Schedule reminder if reminderDate is set
           if (reminderDate) {
                // Schedule email and push notifications, which includes calendar event creation
-               // await scheduleReminder(link._id, userId);
+               await scheduleReminder(link._id, userId);
 
                // Check if the reminder service indicated a token refresh is needed
                // The needsTokenRefresh logic is now primarily handled within scheduleReminder's flow

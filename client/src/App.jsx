@@ -10,6 +10,8 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Footer from "./components/Footer";
 import { useDispatch, useSelector } from "react-redux";
 import { checkAuth } from "./store/Slices/userSlice";
 import { useEffect } from "react";
@@ -26,29 +28,33 @@ const AppRoutes = () => {
   }, [dispatch]);
 
   return (
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      {/* <Route path="/login" element={<Login />} /> */}
-      <Route path="/signup" element={<Signup  />} />
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      {/* Legacy route for backward compatibility */}
-      <Route
-        path="/app"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <div className="min-h-screen flex flex-col">
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        {/* <Route path="/login" element={<Login />} /> */}
+        <Route path="/signup" element={<Signup  />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        {/* Legacy route for backward compatibility */}
+        <Route
+          path="/app"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <Footer />
+    </div>
   );
 };
 
