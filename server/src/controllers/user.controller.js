@@ -354,26 +354,26 @@ export const logout = async (_, res) => {
      }
 }
 
-export const checkAuth = async (req, res) => {
-     try {
-          // console.log("CHECK USER", req.user.resetToken," ",req.user.resetTokenExpiry);
-          res.status(200).json({
-               success: true,
-               data: {
-                    _id: req.user._id,
-                    fullName: req.user.fullName,
-                    email: req.user.email,
-                    isEmailVerified: req.user.isEmailVerified,
-               }
-          });
-     } catch (error) {
-          console.log("Error in checkAuth controller: ", error.message);
-          res.status(500).json({
-               success: false,
-               message: "Internal Server Error"
-          });
-     }
-};
+// export const checkAuth = async (req, res) => {
+//      try {
+//           // console.log("CHECK USER", req.user.resetToken," ",req.user.resetTokenExpiry);
+//           res.status(200).json({
+//                success: true,
+//                data: {
+//                     _id: req.user._id,
+//                     fullName: req.user.fullName,
+//                     email: req.user.email,
+//                     isEmailVerified: req.user.isEmailVerified,
+//                }
+//           });
+//      } catch (error) {
+//           console.log("Error in checkAuth controller: ", error.message);
+//           res.status(500).json({
+//                success: false,
+//                message: "Internal Server Error"
+//           });
+//      }
+// };
 
 // export const forgotPassword = async (req, res) => {
 //      try {

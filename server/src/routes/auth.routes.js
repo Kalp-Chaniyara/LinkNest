@@ -2,7 +2,7 @@ import express from 'express';
 import passport from 'passport';
 // import { signup, login, verifyEmail, resendOTP } from '../controllers/user.controller.js';
 import { logout } from "../controllers/user.controller.js";
-import { checkAuth } from "../controllers/user.controller.js";
+// import { checkAuth } from "../controllers/user.controller.js";
 import { validateToken } from "../middlewares/auth.middleware.js";
 import { generateAccesstoken } from '../utils/jwt.utils.js';
 import { refreshGoogleToken } from '../controllers/user.controller.js';
@@ -70,7 +70,7 @@ router.get('/google/callback',
 );
 
 router.post("/logout", logout);
-router.get("/check", validateToken, checkAuth);
+// router.get("/check", validateToken, checkAuth);
 router.get("/refresh-google-token", validateToken, refreshGoogleToken);
 
 // Push notification routes

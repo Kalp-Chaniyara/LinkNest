@@ -2,14 +2,14 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import toast from "react-hot-toast"
 
-// const import.meta.env.VITE_REACT_APP_BACKEND_BASEURL = "http://localhost:3000/api/auth";
+// const import.meta.env.VITE_REACT_APP_BACKEND_BASEURL /api/auth= "http://localhost:3000/api/auth";
 
 // Async thunks
 export const signup = createAsyncThunk(
      "user/signup",
      async ({ fullName, email, password }, { rejectWithValue }) => {
           try {
-               const response = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/signup`, {
+               const response = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/signup`, {
                     fullName,
                     email,
                     password,
@@ -28,7 +28,7 @@ export const verifyEmail = createAsyncThunk(
      "user/verifyEmail",
      async ({ userId, otp }, { rejectWithValue }) => {
           try {
-               const response = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/verify-email`, {
+               const response = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/verify-email`, {
                     userId,
                     otp,
                },
@@ -45,7 +45,7 @@ export const resendOTP = createAsyncThunk(
      "user/resendOTP",
      async (userId, { rejectWithValue }) => {
           try {
-               const response = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/resend-otp`, {
+               const response = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/resend-otp`, {
                     userId,
                },
                { withCredentials: true }
@@ -62,7 +62,7 @@ export const login = createAsyncThunk(
      async ({ email, password }, { rejectWithValue }) => {
           try {
                const response = await axios.post(
-                    `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/login`,
+                    `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/login`,
                     {
                          email,
                          password,
@@ -81,7 +81,7 @@ export const logout = createAsyncThunk(
      async (_, { rejectWithValue }) => {
           try {
                const response = await axios.post(
-                    `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/logout`,
+                    `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/logout`,
                     {},
                     { withCredentials: true }
                );
@@ -92,22 +92,22 @@ export const logout = createAsyncThunk(
      }
 );
 
-export const checkAuth = createAsyncThunk(
-     "user/checkAuth",
-     async (_, { rejectWithValue }) => {
-          try {
-               // console.log('Checking auth status...');
-               const response = await axios.get(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/check`, {
-                    withCredentials: true,
-               });
-               // console.log('Auth check response:', response.data);
-               return response.data;
-          } catch (error) {
-               // console.error('Auth check error:', error);
-               return rejectWithValue(error.response?.data || { message: 'Authentication failed' });
-          }
-     }
-);
+// export const checkAuth = createAsyncThunk(
+//      "user/checkAuth",
+//      async (_, { rejectWithValue }) => {
+//           try {
+//                // console.log('Checking auth status...');
+//                const response = await axios.get(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/check`, {
+//                     withCredentials: true,
+//                });
+//                // console.log('Auth check response:', response.data);
+//                return response.data;
+//           } catch (error) {
+//                // console.error('Auth check error:', error);
+//                return rejectWithValue(error.response?.data || { message: 'Authentication failed' });
+//           }
+//      }
+// );
 
 const initialState = {
      user: null,
@@ -215,25 +215,25 @@ const userSlice = createSlice({
                     };
                })
                // Check Auth
-               .addCase(checkAuth.pending, (state) => {
-                    // console.log('Auth check pending');
-                    state.loading = true;
-                    state.error = null;
-               })
-               .addCase(checkAuth.fulfilled, (state, action) => {
-                    // console.log('Auth check fulfilled:', action.payload);
-                    state.loading = false;
-                    state.user = action.payload.data;
-                    state.isLogin = true;
-                    state.error = null;
-               })
-               .addCase(checkAuth.rejected, (state, action) => {
-                    // console.log('Auth check rejected:', action.payload);
-                    state.loading = false;
-                    state.user = null;
-                    state.isLogin = false;
-                    state.error = action.payload;
-               });
+               // .addCase(checkAuth.pending, (state) => {
+               //      // console.log('Auth check pending');
+               //      state.loading = true;
+               //      state.error = null;
+               // })
+               // .addCase(checkAuth.fulfilled, (state, action) => {
+               //      // console.log('Auth check fulfilled:', action.payload);
+               //      state.loading = false;
+               //      state.user = action.payload.data;
+               //      state.isLogin = true;
+               //      state.error = null;
+               // })
+               // .addCase(checkAuth.rejected, (state, action) => {
+               //      // console.log('Auth check rejected:', action.payload);
+               //      state.loading = false;
+               //      state.user = null;
+               //      state.isLogin = false;
+               //      state.error = action.payload;
+               // });
      },
 });
 

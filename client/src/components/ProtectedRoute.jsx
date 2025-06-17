@@ -13,17 +13,17 @@ const ProtectedRoute = ({ children }) => {
   const dispatch = useDispatch();
   const { isLogin, loading, user } = useSelector((state) => state.user);
 
-  useEffect(() => {
-    // console.log('ProtectedRoute mounted, checking auth...');
-    dispatch(checkAuth())
-      .unwrap()
-      .then(() => {
-        // console.log('Auth check successful');
-      })
-      .catch((error) => {
-        // console.error('Auth check failed:', error);
-      });
-  }, [dispatch]);
+  // useEffect(() => {
+  //   // console.log('ProtectedRoute mounted, checking auth...');
+  //   dispatch(checkAuth())
+  //     .unwrap()
+  //     .then(() => {
+  //       // console.log('Auth check successful');
+  //     })
+  //     .catch((error) => {
+  //       // console.error('Auth check failed:', error);
+  //     });
+  // }, [dispatch]);
 
   // console.log('Current auth state:', { isLogin, loading, user });
 
@@ -57,7 +57,7 @@ const ProtectedRoute = ({ children }) => {
             </p>
             <div className="space-y-3">
               <Button
-                onClick={() => navigate("/login")}
+                onClick={() => navigate("/signup")}
                 variant="gradient"
                 size="lg"
                 className="w-full"

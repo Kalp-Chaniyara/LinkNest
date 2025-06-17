@@ -5,7 +5,6 @@ import User from "../model/user.model.js";
 //new line below two
 import { cancelReminder } from '../services/reminder.service.js';
 import { createCalendarEvent, deleteCalendarEvent } from '../services/calendar.service.js';
-import { refreshGoogleToken } from './user.controller.js';
 
 export const fetchGrpFromDB = async (req, res) => {
      const userId = req.user._id;
