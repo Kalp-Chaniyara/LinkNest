@@ -56,10 +56,10 @@ router.get('/google/callback',
                res.cookie('tokenStorer', token, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'none', // Change from 'lax' to 'none' for cross-site cookies
-                    domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined,
-                    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-               });
+                    sameSite: 'none', // Changed from 'none' to 'lax' for local development
+                    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+                    path: '/'
+                });
 
                // Redirect to client with success
                res.redirect(`${process.env.CLIENT_URL}/dashboard`);

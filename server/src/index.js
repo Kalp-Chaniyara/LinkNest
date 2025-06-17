@@ -28,7 +28,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 const corsConfig = {
-    origin: process.env.CLIENT_URL,
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -38,20 +38,20 @@ app.use(cors(corsConfig));
 
 // Session configuration
 app.use(session({
-     secret: process.env.SESSION_SECRET,
-     resave: false,
-     saveUninitialized: false,
-     store: MongoStore.create({
-         mongoUrl: process.env.MONGODB_URI,
-         collectionName: 'sessions',
-         ttl: 24 * 60 * 60,
-     }),
-     cookie: {
-         httpOnly: true,
-         secure: process.env.NODE_ENV === 'production',
-         sameSite: 'none', // Change from 'lax' to 'none'
-         maxAge: 24 * 60 * 60 * 1000 // 1 day
-     }
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI,
+        collectionName: 'sessions',
+    }),
+    cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none', // Changed from 'none' to 'lax' for local development
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        path: '/'
+    }
 }));
 
 // console.log(process.env.NODE_ENV === 'production');

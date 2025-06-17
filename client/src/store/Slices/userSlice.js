@@ -82,7 +82,6 @@ export const logout = createAsyncThunk(
           try {
                const response = await axios.post(
                     `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/logout`,
-                    {},
                     { withCredentials: true }
                );
                return response.data;
@@ -98,11 +97,11 @@ export const checkAuth = createAsyncThunk(
           try {
                // console.log('Checking auth status...');
                const response = await axios.get(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/check`,
-                    {},
                     {
-                         withCredentials: true,
+                         withCredentials: true
                     }
                );
+               console.log("This is response from check",response)
                // console.log('Auth check response:', response.data);
                return response.data;
           } catch (error) {
