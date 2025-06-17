@@ -44,12 +44,13 @@ app.use(session({
      store: MongoStore.create({
          mongoUrl: process.env.MONGODB_URI,
          collectionName: 'sessions',
+         ttl: 24 * 60 * 60,
      }),
      cookie: {
          httpOnly: true,
          secure: process.env.NODE_ENV === 'production',
          sameSite: 'none', // Change from 'lax' to 'none'
-         maxAge: 24 * 60 * 60 * 1000 // 24 hours
+         maxAge: 24 * 60 * 60 * 1000 // 1 day
      }
 }));
 
