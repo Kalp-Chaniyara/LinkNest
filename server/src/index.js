@@ -31,7 +31,7 @@ const corsConfig = {
 
 // Session configuration
 app.use(session({
-     secret: process.env.SESSION_SECRET || 'your-secret-key',
+     secret: process.env.SESSION_SECRET,
      resave: false,
      saveUninitialized: false,
      cookie: {
@@ -61,7 +61,6 @@ initializeReminders().catch(error => {
 });
 
 // Server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-     console.log(`Server is running on port ${PORT}`);
+app.listen(process.env.PORT, () => {
+     console.log(`Server is running on port ${process.env.PORT}`);
 });

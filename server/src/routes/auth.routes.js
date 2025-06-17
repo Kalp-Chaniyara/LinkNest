@@ -28,7 +28,7 @@ router.get(
 );
 
 router.get('/google/callback',
-     passport.authenticate('google', { failureRedirect: '/login', accessType: 'offline',
+     passport.authenticate('google', { failureRedirect: '/signup', accessType: 'offline',
           prompt: 'consent' }),
      async (req, res) => {
           try {
