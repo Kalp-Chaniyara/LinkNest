@@ -14,8 +14,8 @@ export const signup = createAsyncThunk(
                     email,
                     password,
                },
-               { withCredentials: true }
-          );
+                    { withCredentials: true }
+               );
                return response.data;
           } catch (error) {
                console.error("Signup error details:", error.response?.data);
@@ -32,8 +32,8 @@ export const verifyEmail = createAsyncThunk(
                     userId,
                     otp,
                },
-               { withCredentials: true }
-          );
+                    { withCredentials: true }
+               );
                return response.data;
           } catch (error) {
                return rejectWithValue(error.response.data);
@@ -48,8 +48,8 @@ export const resendOTP = createAsyncThunk(
                const response = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/resend-otp`, {
                     userId,
                },
-               { withCredentials: true }
-          );
+                    { withCredentials: true }
+               );
                return response.data;
           } catch (error) {
                return rejectWithValue(error.response.data);
@@ -97,9 +97,12 @@ export const checkAuth = createAsyncThunk(
      async (_, { rejectWithValue }) => {
           try {
                // console.log('Checking auth status...');
-               const response = await axios.get(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/check`, {
-                    withCredentials: true,
-               });
+               const response = await axios.get(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/check`,
+                    {},
+                    {
+                         withCredentials: true,
+                    }
+               );
                // console.log('Auth check response:', response.data);
                return response.data;
           } catch (error) {
@@ -168,12 +171,12 @@ const userSlice = createSlice({
                .addCase(verifyEmail.fulfilled, (state) => {
                     state.verificationStatus.isVerifying = false;
                     state.verificationStatus.isVerified = true;
-                    state.isLogin=true;
+                    state.isLogin = true;
                     state.user.isEmailVerified = true;
                     state.showVerificationModal = false;
                })
                .addCase(verifyEmail.rejected, (state, action) => {
-                    state.isLogin=false;
+                    state.isLogin = false;
                     state.verificationStatus.isVerifying = false;
                     state.verificationStatus.error = action.payload;
                })

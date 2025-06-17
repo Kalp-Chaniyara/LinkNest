@@ -49,10 +49,11 @@ app.use(session({
          httpOnly: true,
          secure: process.env.NODE_ENV === 'production',
          sameSite: 'none', // Change from 'lax' to 'none'
-         domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined,
          maxAge: 24 * 60 * 60 * 1000 // 24 hours
      }
 }));
+
+// console.log(process.env.NODE_ENV === 'production');
 
 // Initialize Passport
 app.use(passport.initialize());

@@ -3,6 +3,7 @@ import User from "../model/user.model.js";
 
 export const validateToken = async (req, res, next) => {
     try {
+        console.log("REQ COOKIES",req.cookies)
         const token = req.cookies.tokenStorer;
         // console.log("Auth Middleware: Token received from cookie:", token);
 
