@@ -6,10 +6,10 @@ dotenv.config();
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
-    secure: false,
+    secure: process.env.NODE_ENV === 'production',
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        user: `${process.env.EMAIL_USER}`,
+        pass: `${process.env.EMAIL_PASS}`
     },
     tls: {
         rejectUnauthorized: false
@@ -33,14 +33,14 @@ export const sendOTPEmail = async (email, otp) => {
         //     hasPassword: !!process.env.EMAIL_PASS
         // });
 
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        if (!`${process.env.EMAIL_USER}` || !`${process.env.EMAIL_PASS}`) {
             throw new Error('Email configuration is missing. Please check your environment variables.');
         }
 
         const mailOptions = {
             from: {
                 name: 'Linkable',
-                address: process.env.EMAIL_USER
+                address: `${process.env.EMAIL_USER}`
             },
             to: email,
             subject: 'Verify Your Email - Linkable',
@@ -87,14 +87,14 @@ export const sendOTPEmail = async (email, otp) => {
 
 export const sendReminderEmail = async (email, link) => {
     try {
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        if (!`${process.env.EMAIL_USER}` || !`${process.env.EMAIL_PASS}`) {
             throw new Error('Email configuration is missing. Please check your environment variables.');
         }
 
         const mailOptions = {
             from: {
                 name: 'Linkable',
-                address: process.env.EMAIL_USER
+                address: `${process.env.EMAIL_USER}`
             },
             to: email,
             subject: `Reminder: ${link.title} - Linkable`,

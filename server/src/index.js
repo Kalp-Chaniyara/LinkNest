@@ -8,8 +8,12 @@ import linkRoutes from "./routes/link.routes.js";
 import passport from './config/passport.js';
 import session from 'express-session';
 import { initializeReminders } from './services/reminder.service.js';
+import connectDB from "./lib/db.js";
+import MongoStore from "connect-mongo";
+// import mo
 
 dotenv.config();
+connectDB();
 
 // Verify environment variables
 // console.log('Environment variables loaded:', {
@@ -34,11 +38,15 @@ app.use(session({
      secret: `${process.env.SESSION_SECRET}`,
      resave: false,
      saveUninitialized: false,
+     store: MongoStore.create({
+          mongoUrl: process.env.MONGODB_URI,
+          collectionName: 'sessions',
+     }),
      cookie: {
           httpOnly: true,
           maxAge: 24 * 60 * 60 * 1000, // 24 hours
           sameSite: 'lax', // allow sending cookies from frontend on same-site requests
-          secure: false
+          secure: process.env.NODE_ENV === 'production'
      }
 }));
 
@@ -49,11 +57,6 @@ app.use(passport.session());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/link", linkRoutes);
-
-// Database connection
-mongoose.connect(`${process.env.MONGODB_URI}`)
-     .then(() => console.log("Connected to MongoDB"))
-     .catch((err) => console.error("MongoDB connection error:", err));
 
 // Initialize reminders for all active links
 initializeReminders().catch(error => {
