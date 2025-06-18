@@ -144,7 +144,7 @@ import React from 'react'
 
 function PushNotificationManager() {
   return (
-    <div>PushNotificationManager</div>
+    <div></div>
   )
 }
 

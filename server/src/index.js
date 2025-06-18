@@ -51,11 +51,8 @@ app.use(session({
         secure: process.env.NODE_ENV === 'production',
         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Changed from 'none' to 'lax' for local development
         maxAge: 7*24*60*30*1000, // 7 days
-        path: '/'
     }
 }));
-
-// console.log(process.env.NODE_ENV === 'production');
 
 // Initialize Passport
 app.use(passport.initialize());
@@ -74,10 +71,6 @@ initializeReminders().catch(error => {
 app.listen(process.env.PORT, () => {
      console.log(`Server is running on port ${process.env.PORT}`);
 });
-
-
-// console.log("Id in index.js",process.env.GOOGLE_CLIENT_ID);
-
 
 app.get("/",(_,res)=>{
      res.send("Hello World!");

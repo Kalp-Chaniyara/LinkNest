@@ -14,6 +14,8 @@ const Dashboard = () => {
   
   const user = useSelector((state) => state.user.user);
   const isLoading = useSelector((state) => state.user.loading);
+  const isLogin = useSelector((state)=>state.user.isLogin
+)
 
   useEffect(() => {
     // Check authentication status only once when component mounts
@@ -46,7 +48,7 @@ const Dashboard = () => {
     );
   }
 
-  if (!user) {
+  if (!user || !isLogin) {
     return null; // Will redirect to login due to useEffect
   }
 

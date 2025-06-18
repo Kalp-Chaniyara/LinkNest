@@ -5,7 +5,6 @@ import Link from '../model/link.model.js';
 import User from '../model/user.model.js';
 import { createCalendarEvent } from './calendar.service.js';
 import { sendReminderEmail } from './email.service.js';
-// import { sendPushNotification } from './push.service.js';
 
 // Create a transporter for sending emails
 const transporter = nodemailer.createTransport({
@@ -20,24 +19,6 @@ const transporter = nodemailer.createTransport({
 const activeReminders = new Map();
 
 // Function to check and send overdue reminders
-const checkAndSendOverdueReminders = async () => {
-    try {
-        const now = new Date();
-        const overdueLinks = await Link.find({
-            reminderDate: { $lte: now },
-            lastNotified: { $exists: false }
-        });
-
-        for (const link of overdueLinks) {
-            const user = await User.findById(link.userId);
-            if (user) {
-                await sendReminder(link, user);
-            }
-        }
-    } catch (error) {
-        console.error('Error checking overdue reminders:', error);
-    }
-};
 
 export const scheduleReminder = async (linkId, userId) => {
     try {
@@ -111,14 +92,6 @@ const sendReminder = async (link, user) => {
         // Update lastNotified timestamp
         link.lastNotified = new Date();
         await link.save();
-
-        // Send push notification if user has subscriptions
-        // if (user.pushSubscriptions && user.pushSubscriptions.length > 0) {
-        //      for (const subscription of user.pushSubscriptions) {
-        //           await sendPushNotification(subscription, { title: `Reminder: ${link.title}`, body: link.reminderNote || 'Time to check this link!' });
-        //      }
-        // }
-
     } catch (error) {
         console.error('Error sending reminder:', error);
     }

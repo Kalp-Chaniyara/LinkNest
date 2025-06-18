@@ -50,7 +50,7 @@ router.get('/google/callback',
                await req.user.save();
 
                // Generate JWT token
-               const token = generateAccesstoken(req.user._id,'google');
+               const token = generateAccesstoken(req.user._id);
                
                // Set token in cookie
                res.cookie('tokenStorer', token, {
@@ -73,38 +73,5 @@ router.get('/google/callback',
 router.post("/logout", logout);
 router.get("/check", validateToken, checkAuth);
 router.get("/refresh-google-token", validateToken, refreshGoogleToken);
-
-// Push notification routes
-// router.post('/push/subscribe', validateToken, async (req, res) => {
-//      try {
-//           const userId = req.user._id;
-//           const subscription = req.body;
-//           const success = await addSubscription(userId, subscription);
-//           if (success) {
-//                res.status(200).json({ message: 'Subscription added successfully.' });
-//           } else {
-//                res.status(400).json({ message: 'Failed to add subscription.' });
-//           }
-//      } catch (error) {
-//           console.error('Error subscribing to push notifications:', error);
-//           res.status(500).json({ message: 'Server error during subscription.' });
-//      }
-// });
-
-// router.post('/push/unsubscribe', validateToken, async (req, res) => {
-//      try {
-//           const userId = req.user._id;
-//           const { endpoint } = req.body;
-//           const success = await removeSubscription(userId, endpoint);
-//           if (success) {
-//                res.status(200).json({ message: 'Subscription removed successfully.' });
-//           } else {
-//                res.status(400).json({ message: 'Failed to remove subscription.' });
-//           }
-//      } catch (error) {
-//           console.error('Error unsubscribing from push notifications:', error);
-//           res.status(500).json({ message: 'Server error during unsubscription.' });
-//      }
-// });
 
 export default router;

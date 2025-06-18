@@ -8,7 +8,7 @@ import {
   fetchLinksFromDB,
   // updateLinkInDB,
   updateReminder,
-  syncCalendarEventInDB,
+  // syncCalendarEventInDB,
 } from "../controllers/link.controller.js";
 
 const router = express.Router();
@@ -20,7 +20,7 @@ router.delete("/deleteLink", validateToken, deleteLinkFromDB);
 router.delete("/deleteLinksByGroup", validateToken, deleteGroupFromDB);
 // router.put("/update/:id", validateToken, updateLinkInDB);
 router.put("/reminder/:linkId", validateToken, updateReminder);
-router.post("/syncCalendarEvent/:linkId", validateToken, syncCalendarEventInDB);
+// router.post("/syncCalendarEvent/:linkId", validateToken, syncCalendarEventInDB);
 // router.post("/checkGroupName", validateToken, checkDuplicateGroup);
 
 export default router;

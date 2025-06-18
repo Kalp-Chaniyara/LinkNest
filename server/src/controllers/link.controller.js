@@ -240,45 +240,6 @@ export const deleteGroupFromDB = async (req, res) => {
      }
 }
 
-// export const deleteLinksByGroupId = async (req, res) => {
-//      const userId = req.user._id;
-//      const { groupId } = req.body;
-
-//      try {
-//           if (!groupId) {
-//                return res.status(400).json({
-//                     success: false,
-//                     message: "Group ID is required"
-//                });
-//           }
-
-//           // Find and delete all links that belong to this group
-//           const result = await Link.deleteMany({
-//                userId,
-//                "group.id": groupId
-//           });
-
-//           if (result.deletedCount === 0) {
-//                return res.status(404).json({
-//                     success: false,
-//                     message: "No links found for this group"
-//                });
-//           }
-
-//           return res.status(200).json({
-//                success: true,
-//                message: `Successfully deleted ${result.deletedCount} links`,
-//                deletedCount: result.deletedCount
-//           });
-//      } catch (error) {
-//           console.error("Error deleting links by group:", error.message);
-//           return res.status(500).json({
-//                success: false,
-//                message: "Error while deleting links"
-//           });
-//      }
-// };
-
 // Add a new function to handle reminder updates
 export const updateReminder = async (req, res) => {
      const userId = req.user._id;
@@ -343,66 +304,66 @@ export const updateReminder = async (req, res) => {
      }
 };
 
-export const syncCalendarEventInDB = async (req, res) => {
-     const userId = req.user._id;
-     const { linkId } = req.params;
+// export const syncCalendarEventInDB = async (req, res) => {
+//      const userId = req.user._id;
+//      const { linkId } = req.params;
 
-     try {
-          const link = await Link.findOne({ _id: linkId, userId });
-          if (!link) {
-               return res.status(404).json({
-                    success: false,
-                    message: "Link not found"
-               });
-          }
+//      try {
+//           const link = await Link.findOne({ _id: linkId, userId });
+//           if (!link) {
+//                return res.status(404).json({
+//                     success: false,
+//                     message: "Link not found"
+//                });
+//           }
 
-          if (!link.reminderDate) {
-               return res.status(400).json({
-                    success: false,
-                    message: "Link does not have a reminder date"
-               });
-          }
+//           if (!link.reminderDate) {
+//                return res.status(400).json({
+//                     success: false,
+//                     message: "Link does not have a reminder date"
+//                });
+//           }
 
-          if (link.calendarEventId) {
-               return res.status(200).json({
-                    success: true,
-                    message: "Calendar event already exists for this link",
-                    link
-               });
-          }
+//           if (link.calendarEventId) {
+//                return res.status(200).json({
+//                     success: true,
+//                     message: "Calendar event already exists for this link",
+//                     link
+//                });
+//           }
 
-          const calendarEvent = await createCalendarEvent(userId, link);
+//           const calendarEvent = await createCalendarEvent(userId, link);
 
-          if (calendarEvent) {
-               link.calendarEventId = calendarEvent.id;
-               await link.save();
-               // console.log("Server response link after calendar sync:", link);
-               return res.status(200).json({
-                    success: true,
-                    message: "Calendar event synced successfully",
-                    link
-               });
-          } else {
-               const user = await User.findById(userId);
-               if (user?.googleId) {
-                    return res.status(200).json({
-                         success: false,
-                         message: "Failed to sync calendar event, Google token might need refresh",
-                         needsTokenRefresh: true,
-                         link
-                    });
-               } else {
-                    return res.status(500).json({
-                         success: false,
-                         message: "Failed to sync calendar event"
-                    });
-               }
-          }
-     } catch (error) {
-          console.error("Error syncing calendar event:", error);
-          return res.status(500).json({
-               success: false,
-               message: "Failed to sync calendar event"
-          });
-     }
-};
+//           if (calendarEvent) {
+//                link.calendarEventId = calendarEvent.id;
+//                await link.save();
+//                // console.log("Server response link after calendar sync:", link);
+//                return res.status(200).json({
+//                     success: true,
+//                     message: "Calendar event synced successfully",
+//                     link
+//                });
+//           } else {
+//                const user = await User.findById(userId);
+//                if (user?.googleId) {
+//                     return res.status(200).json({
+//                          success: false,
+//                          message: "Failed to sync calendar event, Google token might need refresh",
+//                          needsTokenRefresh: true,
+//                          link
+//                     });
+//                } else {
+//                     return res.status(500).json({
+//                          success: false,
+//                          message: "Failed to sync calendar event"
+//                     });
+//                }
+//           }
+//      } catch (error) {
+//           console.error("Error syncing calendar event:", error);
+//           return res.status(500).json({
+//                success: false,
+//                message: "Failed to sync calendar event"
+//           });
+//      }
+// };

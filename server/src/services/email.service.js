@@ -3,13 +3,13 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Debug logging
-console.log('Email Configuration:', {
-    host: 'smtp.gmail.com',
-    port: process.env.NODE_ENV === 'production' ? 465 : process.env.EMAIL_PORT,
-    hasUser: !!process.env.EMAIL_USER,
-    hasPass: !!process.env.EMAIL_PASS,
-    secure: process.env.NODE_ENV === 'production'
-});
+// console.log('Email Configuration:', {
+//     host: 'smtp.gmail.com',
+//     port: process.env.NODE_ENV === 'production' ? 465 : process.env.EMAIL_PORT,
+//     hasUser: !!process.env.EMAIL_USER,
+//     hasPass: !!process.env.EMAIL_PASS,
+//     secure: process.env.NODE_ENV === 'production'
+// });
 
 // Create a transporter using Gmail SMTP
 const transporter = nodemailer.createTransport({
@@ -20,14 +20,6 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
-    tls: {
-        rejectUnauthorized: true
-    },
-    pool: true, // Use pooled connections
-    maxConnections: 5,
-    maxMessages: 100,
-    rateDelta: 1000, // How many messages to send per second
-    rateLimit: 5 // Max number of messages per rateDelta
 });
 
 // Verify transporter configuration with detailed error logging

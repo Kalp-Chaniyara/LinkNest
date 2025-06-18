@@ -8,7 +8,7 @@ export const validateToken = async (req, res, next) => {
         // console.log("Auth Middleware: Token received from cookie:", token);
 
         if (!token) {
-            // console.log("Auth Middleware: No token found in cookie.");
+            console.log("Auth Middleware: No token found in cookie.");
             return res.status(401).json({
                 success: false,
                 message: "Authentication required"
@@ -28,7 +28,7 @@ export const validateToken = async (req, res, next) => {
         }
 
         if (!decoded || !decoded.userId) {
-            // console.log("Auth Middleware: Decoded token is missing userId.");
+            console.log("Auth Middleware: Decoded token is missing userId.");
             return res.status(401).json({
                 success: false,
                 message: "Invalid token payload"
