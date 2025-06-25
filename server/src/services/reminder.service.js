@@ -1,12 +1,12 @@
-//the whole new file
+// //the whole new file
 
 import nodemailer from 'nodemailer';
 import Link from '../model/link.model.js';
 import User from '../model/user.model.js';
-import { createCalendarEvent } from './calendar.service.js';
+// import { createCalendarEvent } from './calendar.service.js';
 import { sendReminderEmail } from './email.service.js';
 
-// Create a transporter for sending emails
+// // Create a transporter for sending emails
 const transporter = nodemailer.createTransport({
      service: 'gmail',
      auth: {
@@ -15,10 +15,10 @@ const transporter = nodemailer.createTransport({
      }
 });
 
-// Store active reminders
+// // Store active reminders
 const activeReminders = new Map();
 
-// Function to check and send overdue reminders
+// // Function to check and send overdue reminders
 
 export const scheduleReminder = async (linkId, userId) => {
     try {
@@ -64,13 +64,13 @@ export const scheduleReminder = async (linkId, userId) => {
         activeReminders.set(linkId, reminderTimeout);
 
         // Create calendar event if user has Google Calendar access
-        if (user.googleAccessToken) {
-            const calendarEvent = await createCalendarEvent(userId, link);
-            if (calendarEvent) {
-                link.calendarEventId = calendarEvent.id;
-                await link.save();
-            }
-        }
+        // if (user.googleAccessToken) {
+        //     const calendarEvent = await createCalendarEvent(userId, link);
+        //     if (calendarEvent) {
+        //         link.calendarEventId = calendarEvent.id;
+        //         await link.save();
+        //     }
+        // }
     } catch (error) {
         console.error('Error scheduling reminder:', error);
     }

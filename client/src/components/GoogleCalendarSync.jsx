@@ -36,11 +36,11 @@ const GoogleCalendarSync = forwardRef(({ onTokenRefreshed }, ref) => {
         });
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to refresh Google Calendar access. Please try again.",
-        variant: "destructive",
-      });
+      // toast({
+      //   title: "Error",
+      //   description: "Failed to refresh Google Calendar access. Please try again.",
+      //   variant: "destructive",
+      // });
     }
   };
 

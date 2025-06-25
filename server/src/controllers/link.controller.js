@@ -4,7 +4,10 @@ import User from "../model/user.model.js";
 
 //new line below two
 import { cancelReminder, scheduleReminder } from '../services/reminder.service.js';
-import { createCalendarEvent, deleteCalendarEvent } from '../services/calendar.service.js';
+// import { 
+//      createCalendarEvent, 
+//      deleteCalendarEvent 
+// } from '../services/calendar.service.js';
 
 export const fetchGrpFromDB = async (req, res) => {
      const userId = req.user._id;
